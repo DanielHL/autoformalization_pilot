@@ -1,0 +1,50 @@
+"""Needs Python 3.9+"""
+from dataclasses import dataclass, field
+import json
+
+@dataclass
+class Node:
+    name: str
+    """The name of the node, e.g., 'FermatLastTheorem'."""
+    inputs: list[str] = field(default_factory=list)
+    """List of input node names, which can be used as hypotheses in the formal proof."""
+    type: str = "theorem"
+    """Type of the node, either 'theorem', 'definition', or 'hypothesis'."""
+    informal: str = ""
+    """Informal description of the theorem or concept."""
+    formal: str = ""
+    """Formal statement of the theorem or definition, using Lean 4 syntax."""
+    informal_proof: str = ""
+    """Natural language proof of the theorem, blank if the node is a definition or hypothesis."""
+
+
+def load_nodes_from_json(filename):
+    with open(filename, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    # If the file contains a list of nodes
+    if isinstance(data, list):
+        nodes = [Node(**item) for item in data]
+    # If the file contains a single node (dict)
+    else:
+        nodes = [Node(**data)]
+    return nodes
+
+def print_nodes(nodes):
+    for node in nodes:
+        print(f"Name: {node.name}")
+        print(f"Dependencies: {node.inputs}")
+        print(f"Formal statement:\n{node.formal}\n")
+
+if __name__ == "__main__":
+    nodes = load_nodes_from_json("blueprint.json")
+    print_nodes(nodes)
+    # node = Node(
+    #     name="FermatLastTheorem",
+    #     inputs=[],
+    #     is_definition=False,
+    #     informal="No three positive integers a, b, and c satisfy the equation a^n + b^n = c^n for any integer value of n greater than 2.",
+    #     formal="∀ n > 2, ∄ a, b, c ∈ ℕ⁺ : aⁿ + bⁿ = cⁿ",
+    #     proof="See Andrew Wiles' proof."
+    # )
+    # with open("test.json", "w", encoding="utf-8") as f:
+    #     json.dump(node.__dict__, f, ensure_ascii=False, indent=2)

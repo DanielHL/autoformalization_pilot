@@ -1,0 +1,34 @@
+[
+{
+  "name": "odd_primes_only",
+  "inputs": [],
+  "type": "theorem",
+  "informal": "If there is a counterexample to Fermat's Last Theorem, then there is a counterexample $a^p+b^p=c^p$ with $p$ an odd prime.",
+  "formal": "theorem odd_primes_only (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem",
+  "informal_proof": "Note: this proof is \\href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberTheory/FLT/Four.html#FermatLastTheorem.of_odd_primes}{in mathlib already}; we run through it for completeness' sake.\n Say $a^n + b^n = c^n$ is a counterexample to Fermat's Last Theorem. Every positive integer is either a power of 2 or has an odd prime factor. If $n=kp$ has an odd prime factor $p$ then $(a^k)^p+(b^k)^p=(c^k)^p$ is the counterexample we seek. It remains to deal with the case where $n$ is a power of 2, so let's assume this. We have $3\\leq n$ by assumption, so $n=4k$ must be a multiple of~4, and thus $(a^k)^4=(b^k)^4=(c^k)^4$, giving us a counterexample to Fermat's Last Theorem for $n=4$. However an old result of Fermat himself (proved as \\href{https://leanprover-community.github.io/mathlib4_docs/Mathlib/NumberTheory/FLT/Four.html#fermatLastTheoremFour}{\tt fermatLastTheoremFour} in {\tt mathlib}) says that $x^4+y^4=z^4$ has no solutions in positive integers."
+},
+{
+  "name": "fermatLastTheoremThree",
+  "inputs": [],
+  "type": "hypothesis",
+  "informal": "There are no solutions in positive integers to $a^3+b^3=c^3$.",
+  "formal": "def fermatLastTheoremThree : Prop := ∀ a b c : ℕ, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ 3 + b ^ 3 ≠ c ^ 3",
+  "informal_proof": ""
+},
+{
+  "name": "FreyPackage",
+  "inputs": [],
+  "type": "definition",
+  "informal": "A Frey package is a triple of pairwise coprime nonzero integers $a$, $b$, $c$ with $a\\equiv3\\pmod4$, $b\\equiv0\\pmod2$, and a prime $p\\geq5$ such that $a^p+b^p=c^p$.",
+  "formal": "structure FreyPackage where a : ℤ; b : ℤ; c : ℤ; ha0 : a ≠ 0; hb0 : b ≠ 0; hc0 : c ≠ 0; p : ℕ; pp : Nat.Prime p; hp5 : 5 ≤ p; hFLT : a ^ p + b ^ p = c ^ p; hgcdab : gcd a b = 1 -- same as saying a,b,c pairwise coprime; ha4 : (a : ZMod 4) = 3; hb2 : (b : ZMod 2) = 0",
+  "informal_proof":""
+},
+{
+  "name": "not_FLT_p_ge_5",
+  "inputs": ["FreyPackage"],
+  "type": "theorem",
+  "informal": "If there is a counterexample to Fermat's Last Theorem with $p\\geq5$, then there is a Frey package.",
+  "formal": "lemma not_FLT_p_ge_5 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) {p : ℕ} (pp : p.Prime) (hp5 : 5 ≤ p) (H : a^p + b^p = c^p) : Nonempty FreyPackage",
+  "informal_proof": ""
+}
+]
