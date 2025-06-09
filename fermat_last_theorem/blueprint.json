@@ -30,5 +30,29 @@
   "informal": "If there is a counterexample to Fermat's Last Theorem with $p\\geq5$, then there is a Frey package.",
   "formal": "lemma not_FLT_p_ge_5 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) {p : ℕ} (pp : p.Prime) (hp5 : 5 ≤ p) (H : a^p + b^p = c^p) : Nonempty FreyPackage",
   "informal_proof": ""
+},
+{
+  "name": "FreyCurve",
+  "inputs": ["FreyPackage"],
+  "type": "definition",
+  "informal": "The Frey curve associated to a Frey package $(a,b,c,p)$ is the Weierstrass curve defined by the equation $Y^2=X(X-a^p)(X+b^p).$",
+  "formal": "def FreyCurve (P : FreyPackage) : WeierstrassCurve ℚ where a₁ := 1; a₂ := (P.b ^ P.p - P.a ^ P.p); a₃ := 0; a₄ := -(P.a ^ P.p) * (P.b ^ P.p); a₆ := 0",
+  "informal_proof": ""
+},
+{
+  "name": "FreyCurve_torsionGaloisRepresentation",
+  "inputs": ["FreyCurve", "FreyPackage"],
+  "type": "definition",
+  "informal": "The torsion Galois representation of the Frey curve associated to a Frey package is the Galois representation of the torsion points of the Frey curve over the field $\\mathbb{Q}(\\sqrt{-1})$.",
+  "formal": "def FreyCurve.torsionGaloisRepresentation (P : FreyPackage) (Qbar : FieldExtension ℚ) : GaloisRepresentation (ZMod P.p) Qbar where asModule := ZMod P.p; asGroup := P.FreyCurve.torsionPoints Qbar; asAction := sorry",
+  "informal_proof": ""
+},
+{
+  "name": "Wiles_Frey",
+  "inputs": ["FreyPackage","FreyCurve","FreyCurve_torsionGaloisRepresentation"],
+  "type": "hypothesis",
+  "informal": "Wiles' theorem states that the torsion Galois representation of the Frey curve associated to a Frey package is not simple as a module over $\\mathbb{Z}/p\\mathbb{Z}$.",
+  "formal": "theorem Wiles_Frey (P : FreyPackage) : ¬ IsSimpleModule (ZMod P.p) (P.FreyCurve.torsionGaloisRepresentation P.p Qbar).asModule",
+  "informal_proof": ""
 }
 ]
