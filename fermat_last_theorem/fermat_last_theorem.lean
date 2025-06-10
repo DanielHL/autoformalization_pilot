@@ -93,6 +93,19 @@ structure PTorsionRepresentation (K : Type) [Field K] [Algebra ℚ K] (E : Weier
   isAddCommGroup : AddCommGroup carrier
   isZModPModule : Module (ZMod p) carrier
   isGaloisAction : MulAction (K ≃ₐ[ℚ] K) carrier
+  -- The explicit group homomorphism from carrier to E(K)
+  φ : letI := isAddCommGroup
+      carrier →+ (E.baseChange K).toAffine.Point
+  -- 1) φ is injective
+  φ_injective : Function.Injective φ
+  -- 2) The image of φ is exactly the p-torsion subgroup
+  φ_image : ∀ (P : (E.baseChange K).toAffine.Point),
+    P ∈ Set.range φ ↔ p • P = 0
+  -- 3) φ intertwines the Galois actions
+  φ_equivariant : ∀ (g : K ≃ₐ[ℚ] K) (m : carrier),
+    letI := isAddCommGroup
+    letI := isGaloisAction
+    φ (g • m) = WeierstrassCurve.Affine.Point.map g.toAlgHom (φ m)
 
 noncomputable def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
     (E : WeierstrassCurve ℚ) (p : ℕ) [Fact p.Prime] :
