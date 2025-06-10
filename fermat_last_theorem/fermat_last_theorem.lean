@@ -107,7 +107,7 @@ structure PTorsionRepresentation (K : Type) [Field K] [Algebra ℚ K] (E : Weier
     letI := isGaloisAction
     φ (g • m) = WeierstrassCurve.Affine.Point.map g.toAlgHom (φ m)
 
-noncomputable def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
     (E : WeierstrassCurve ℚ) (p : ℕ) [Fact p.Prime] :
     PTorsionRepresentation K E p := sorry
 
@@ -118,7 +118,7 @@ noncomputable def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosur
   \informal: The torsion Galois representation of the Frey curve associated to a Frey package is the Galois module associated to the Frey curve and the prime $p$ of the Frey package.
   informal_proof:
 -/
-noncomputable def FreyCurveGaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+def FreyCurveGaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
     (P : FreyPackage) [h : Fact P.p.Prime] :
     PTorsionRepresentation K (FreyCurve P) P.p :=
   GaloisModule K (FreyCurve P) P.p
