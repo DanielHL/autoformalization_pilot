@@ -1,0 +1,112 @@
+[
+    {
+        "name": "OddPrimesOnly",
+        "inputs": [],
+        "type": "theorem",
+        "informal": "If there is a counterexample to Fermat's Last Theorem, then there is a counterexample $a^p+b^p=c^p$ with $p$ an odd prime.",
+        "formal": "theorem OddPrimesOnly (hprimes : \u2200 p : \u2115, Nat.Prime p \u2192 Odd p \u2192 FermatLastTheoremFor p) : FermatLastTheorem := by sorry",
+        "informal_proof": ""
+    },
+    {
+        "name": "FLT3",
+        "inputs": [],
+        "type": "hypothesis",
+        "informal": "There are no solutions in positive integers to $a^3+b^3=c^3$.",
+        "formal": "def FLT3 : Prop := FermatLastTheoremFor 3",
+        "informal_proof": ""
+    },
+    {
+        "name": "FLT4",
+        "inputs": [],
+        "type": "hypothesis",
+        "informal": "There are no solutions in positive integers to $a^4+b^4=c^4$.",
+        "formal": "def FLT4 : Prop := FermatLastTheoremFor 4",
+        "informal_proof": ""
+    },
+    {
+        "name": "FreyPackage",
+        "inputs": [],
+        "type": "definition",
+        "informal": "A Frey package is a triple of pairwise coprime nonzero integers $a$, $b$, $c$ with $a\\equiv3\\pmod4$, $b\\equiv0\\pmod2$, and a prime $p\\geq5$ such that $a^p+b^p=c^p$.",
+        "formal": "structure FreyPackage where\n  a : \u2124\n  b : \u2124\n  c : \u2124\n  ha0 : a \u2260 0\n  hb0 : b \u2260 0\n  hc0 : c \u2260 0\n  p : \u2115\n  pp : Nat.Prime p\n  hp5 : 5 \u2264 p\n  hFLT : a ^ p + b ^ p = c ^ p\n  hgcdab : gcd a b = 1 -- same as saying a,b,c pairwise coprime\n  ha4 : (a : ZMod 4) = 3\n  hb2 : (b : ZMod 2) = 0",
+        "informal_proof": ""
+    },
+    {
+        "name": "NotFLTGivesFreyPackage",
+        "inputs": [
+            "FreyPackage"
+        ],
+        "type": "theorem",
+        "informal": "If there is a counterexample to Fermat's Last Theorem with $p\\geq5$, then there is a Frey package.",
+        "formal": "lemma NotFLTGivesFreyPackage {a b c : \u2124} (ha : a \u2260 0) (hb : b \u2260 0) (hc : c \u2260 0) {p : \u2115} (pp : p.Prime) (hp5 : 5 \u2264 p) (H : a^p + b^p = c^p) : Nonempty FreyPackage := by sorry",
+        "informal_proof": ""
+    },
+    {
+        "name": "FreyCurve",
+        "inputs": [
+            "FreyPackage"
+        ],
+        "type": "definition",
+        "informal": "The Frey curve associated to a Frey package $(a,b,c,p)$ is the Weierstrass curve defined by the equation $Y^2=X(X-a^p)(X+b^p).$",
+        "formal": "def FreyCurve (P : FreyPackage) : WeierstrassCurve \u211a where\n  a\u2081 := 1\n  a\u2082 := (P.b ^ P.p - P.a ^ P.p)\n  a\u2083 := 0\n  a\u2084 := -(P.a ^ P.p) * (P.b ^ P.p)\n  a\u2086 := 0",
+        "informal_proof": ""
+    },
+    {
+        "name": "GaloisModule",
+        "inputs": [],
+        "type": "definition",
+        "informal": "The Galois module associated to a Weierstrass curve $E$ over $\\mathbb{Q}$ and a prime $p$ is the module of $p$-torsion points of $E$ over an algebraic closure $K$ of $\\mathbb{Q}$, equipped with the canonical action of the absolute Galois group $Gal(K/\\mathbb{Q})$.",
+        "formal": "structure PTorsionRepresentation (K : Type) [Field K] [Algebra \u211a K] (E : WeierstrassCurve \u211a) (p : \u2115) [Fact p.Prime] where\n  carrier : Type\n  isAddCommGroup : AddCommGroup carrier\n  isZModPModule : Module (ZMod p) carrier\n  isGaloisAction : MulAction (K \u2243\u2090[\u211a] K) carrier\n  -- The explicit group homomorphism from carrier to E(K)\n  \u03c6 : letI := isAddCommGroup\n      carrier \u2192+ (E.baseChange K).toAffine.Point\n  -- 1) \u03c6 is injective\n  \u03c6_injective : Function.Injective \u03c6\n  -- 2) The image of \u03c6 is exactly the p-torsion subgroup\n  \u03c6_image : \u2200 (P : (E.baseChange K).toAffine.Point),\n    P \u2208 Set.range \u03c6 \u2194 p \u2022 P = 0\n  -- 3) \u03c6 intertwines the Galois actions\n  \u03c6_equivariant : \u2200 (g : K \u2243\u2090[\u211a] K) (m : carrier),\n    letI := isAddCommGroup\n    letI := isGaloisAction\n    \u03c6 (g \u2022 m) = WeierstrassCurve.Affine.Point.map g.toAlgHom (\u03c6 m)\n\nnoncomputable def GaloisModule (K : Type) [Field K] [Algebra \u211a K] [IsAlgClosure \u211a K]\n    (E : WeierstrassCurve \u211a) (p : \u2115) [Fact p.Prime] :\n    PTorsionRepresentation K E p := sorry",
+        "informal_proof": ""
+    },
+    {
+        "name": "FreyCurveGaloisModule",
+        "inputs": [
+            "FreyCurve",
+            "GaloisModule"
+        ],
+        "type": "definition",
+        "informal": "The torsion Galois representation of the Frey curve associated to a Frey package is the Galois module associated to the Frey curve and the prime $p$ of the Frey package.",
+        "formal": "noncomputable def FreyCurveGaloisModule (K : Type) [Field K] [Algebra \u211a K] [IsAlgClosure \u211a K]\n    (P : FreyPackage) [h : Fact P.p.Prime] :\n    PTorsionRepresentation K (FreyCurve P) P.p :=\n  GaloisModule K (FreyCurve P) P.p",
+        "informal_proof": ""
+    },
+    {
+        "name": "Wiles_Frey",
+        "inputs": [
+            "FreyPackage",
+            "FreyCurve",
+            "FreyCurveGaloisModule"
+        ],
+        "type": "hypothesis",
+        "informal": "The torsion Galois representation of the Frey curve associated to a Frey package is not simple as a module over $\\mathbb{Z}/p\\mathbb{Z}$.",
+        "formal": "def Wiles_Frey : Prop :=\n  \u2200 (K : Type) [Field K] [Algebra \u211a K] [IsAlgClosure \u211a K] (P : FreyPackage) [h : Fact P.p.Prime],\n    letI := (FreyCurveGaloisModule K P).isZModPModule\n    letI := (FreyCurveGaloisModule K P).isAddCommGroup\n    \u00ac IsSimpleModule (ZMod P.p) (FreyCurveGaloisModule K P).carrier",
+        "informal_proof": ""
+    },
+    {
+        "name": "Mazur_Frey",
+        "inputs": [
+            "FreyPackage",
+            "FreyCurve",
+            "FreyCurveGaloisModule"
+        ],
+        "type": "hypothesis",
+        "informal": "The torsion Galois representation of the Frey curve associated to a Frey package is simple as a module over $\\mathbb{Z}/p\\mathbb{Z}$.",
+        "formal": "def Mazur_Frey : Prop :=\n  \u2200 (K : Type) [Field K] [Algebra \u211a K] [IsAlgClosure \u211a K] (P : FreyPackage) [h : Fact P.p.Prime],\n    letI := (FreyCurveGaloisModule K P).isZModPModule\n    letI := (FreyCurveGaloisModule K P).isAddCommGroup\n    IsSimpleModule (ZMod P.p) (FreyCurveGaloisModule K P).carrier",
+        "informal_proof": ""
+    },
+    {
+        "name": "MainTheorem",
+        "inputs": [
+            "OddPrimesOnly",
+            "FLT3",
+            "FLT4",
+            "NotFLTGivesFreyPackage",
+            "Wiles_Frey",
+            "Mazur_Frey"
+        ],
+        "type": "theorem",
+        "informal": "Fermat's Last Theorem holds: there are no positive integer solutions to $a^n+b^n=c^n$ for $n>2$.",
+        "formal": "theorem MainTheorem\n    (hwiles : Wiles_Frey)\n    (hmazur : Mazur_Frey) :\n    \u2200 n : \u2115, n > 2 \u2192 \u2200 a b c : \u2115, a \u2260 0 \u2192 b \u2260 0 \u2192 c \u2260 0 \u2192 a ^ n + b ^ n \u2260 c ^ n := by sorry",
+        "informal_proof": ""
+    }
+]
