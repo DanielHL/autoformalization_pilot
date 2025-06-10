@@ -5,7 +5,7 @@
         "type": "theorem",
         "informal": "If there is a counterexample to Fermat's Last Theorem, then there is a counterexample $a^p+b^p=c^p$ with $p$ an odd prime.",
         "formal": "theorem OddPrimesOnly (hprimes : \u2200 p : \u2115, Nat.Prime p \u2192 Odd p \u2192 FermatLastTheoremFor p) : FermatLastTheorem := by sorry",
-        "informal_proof": ""
+        "informal_proof": "Say $a^n + b^n = c^n$ is a counterexample to Fermat's Last Theorem. Every positive integer is either a power of 2 or has an odd prime factor. If $n=kp$ has an odd prime factor $p$ then $(a^k)^p+(b^k)^p=(c^k)^p$ is the counterexample we seek. It remains to deal with the case where $n$ is a power of 2, so let's assume this. We have $3\\leq n$ by assumption, so $n=4k$ must be a multiple of~4, and thus $(a^k)^4=(b^k)^4=(c^k)^4$, giving us a counterexample to Fermat's Last Theorem for $n=4$. However theorem \\ref{FermatLastTheoremFour} says that $x^4+y^4=z^4$ has no solutions in positive integers."
     },
     {
         "name": "FLT3",
@@ -39,7 +39,7 @@
         "type": "theorem",
         "informal": "If there is a counterexample to Fermat's Last Theorem with $p\\geq5$, then there is a Frey package.",
         "formal": "lemma NotFLTGivesFreyPackage {a b c : \u2124} (ha : a \u2260 0) (hb : b \u2260 0) (hc : c \u2260 0) {p : \u2115} (pp : p.Prime) (hp5 : 5 \u2264 p) (H : a^p + b^p = c^p) : Nonempty FreyPackage := by sorry",
-        "informal_proof": ""
+        "informal_proof": "Suppose we have a counterexample $a^p+b^p=c^p$ for the given $p$; we now build a Frey package from this data."
     },
     {
         "name": "FreyCurve",
@@ -107,6 +107,6 @@
         "type": "theorem",
         "informal": "Fermat's Last Theorem holds: there are no positive integer solutions to $a^n+b^n=c^n$ for $n>2$.",
         "formal": "theorem MainTheorem\n    (hwiles : Wiles_Frey)\n    (hmazur : Mazur_Frey) :\n    \u2200 n : \u2115, n > 2 \u2192 \u2200 a b c : \u2115, a \u2260 0 \u2192 b \u2260 0 \u2192 c \u2260 0 \u2192 a ^ n + b ^ n \u2260 c ^ n := by sorry",
-        "informal_proof": ""
+        "informal_proof": "We first show that if there is a counterexample to Fermat's Last Theorem, then there is a counterexample with $n$ an odd prime. This is the content of the theorem \\ref{OddPrimesOnly}. We then show that if there is a counterexample with $n\\geq5$, then there is a Frey package, which is a triple of pairwise coprime nonzero integers $a$, $b$, $c$ with $a\\equiv3\\pmod4$, $b\\equiv0\\pmod2$, and a prime $p\\geq5$ such that $a^p+b^p=c^p$. This is the content of the lemma \\ref{NotFLTGivesFreyPackage}. We then associate to this Frey package a Weierstrass curve, the Frey curve, and its torsion Galois representation. The key point is that Wiles' theorem says that this torsion Galois representation cannot be simple as a module over $\\mathbb{Z}/p\\mathbb{Z}$, while Mazur's theorem says that it must be simple as a module over $\\mathbb{Z}/p\\mathbb{Z}$. This contradiction shows that there can be no counterexamples to Fermat's Last Theorem."
     }
 ]

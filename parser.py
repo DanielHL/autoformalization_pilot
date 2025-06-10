@@ -41,7 +41,7 @@ def parse_lean_file(file_path: str) -> list[Node]:
         inputs = json.loads(inputs_match.group(1)) if inputs_match else []  # Parse as a Python list
         type = type_match.group(1).strip() if type_match else "theorem"
         informal = informal_match.group(1).strip() if informal_match else ""
-        informal_proof = informal_proof_match.group(1).strip() if informal_proof_match else ""
+        informal_proof = informal_proof_match.group(1).strip().rstrip('-/') if informal_proof_match else ""  # Remove trailing '-/'
         formal = formal_match.group(1).strip() if formal_match else ""
 
         # Remove trailing newlines from formal field
