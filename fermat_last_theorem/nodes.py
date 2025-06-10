@@ -29,22 +29,21 @@ def load_nodes_from_json(filename):
         nodes = [Node(**data)]
     return nodes
 
-def print_nodes(nodes):
+
+if __name__ == "__main__":
+    nodes = load_nodes_from_json("blueprint.json")
+
+    num_nodes = len(nodes)
+    print(f"Total number of nodes: {num_nodes}")
+
+    hypothesis_count = sum(node.type == "hypothesis" for node in nodes)
+    print(f"Total number of hypotheses: {hypothesis_count}")
+
+    sorry_count = sum(node.formal.count("sorry") for node in nodes)
+    print(f"Total occurrences of 'sorry' in formal statements: {sorry_count}")
+
     for node in nodes:
         print(f"Name: {node.name}")
         print(f"Dependencies: {node.inputs}")
         print(f"Formal statement:\n{node.formal}\n")
 
-if __name__ == "__main__":
-    nodes = load_nodes_from_json("blueprint.json")
-    print_nodes(nodes)
-    # node = Node(
-    #     name="FermatLastTheorem",
-    #     inputs=[],
-    #     is_definition=False,
-    #     informal="No three positive integers a, b, and c satisfy the equation a^n + b^n = c^n for any integer value of n greater than 2.",
-    #     formal="∀ n > 2, ∄ a, b, c ∈ ℕ⁺ : aⁿ + bⁿ = cⁿ",
-    #     proof="See Andrew Wiles' proof."
-    # )
-    # with open("test.json", "w", encoding="utf-8") as f:
-    #     json.dump(node.__dict__, f, ensure_ascii=False, indent=2)
