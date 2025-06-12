@@ -1,10 +1,8 @@
--- This file was generated from a JSON blueprint.
+-- This document is based on the leanblueprint for the ongoing project to formalize Fermat's last theorem here: https://github.com/ImperialCollegeLondon/FLT
+
 import Mathlib.Tactic
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-
--- Global variable for the algebraic closure of ℚ
--- variable (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
 
 /-! NODE
   \name: OddPrimesOnly

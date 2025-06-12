@@ -1,7 +1,7 @@
 [
     {
         "name": "OddPrimesOnly",
-        "inputs": [],
+        "inputs": ["FLT4"],
         "type": "theorem",
         "informal": "If there is a counterexample to Fermat's Last Theorem, then there is a counterexample $a^p+b^p=c^p$ with $p$ an odd prime.",
         "formal": "theorem OddPrimesOnly (hprimes : \u2200 p : \u2115, Nat.Prime p \u2192 Odd p \u2192 FermatLastTheoremFor p) : FermatLastTheorem := by sorry",
@@ -73,8 +73,6 @@
     {
         "name": "Wiles_Frey",
         "inputs": [
-            "FreyPackage",
-            "FreyCurve",
             "FreyCurveGaloisModule"
         ],
         "type": "hypothesis",
@@ -85,8 +83,6 @@
     {
         "name": "Mazur_Frey",
         "inputs": [
-            "FreyPackage",
-            "FreyCurve",
             "FreyCurveGaloisModule"
         ],
         "type": "hypothesis",
