@@ -18,7 +18,7 @@ If you are a mathematician with little to no Lean experience, or a Lean enthusia
 
 - It is OK to omit some minor intermediate lemmas. This just makes the problem harder by essentially requiring the solver to discover and add those on its own!
 
-- The ultimate contribution should be a single Lean 4 file that may import from MATHLIB but no other libraries. It should generate no compilation errors. It should contain up to 20 `sorry` statements such that, once filled in, the file will type check and constitute a proof of an interesting mathematical result.
+- The ultimate contribution should be a single Lean 4 file that may import from MATHLIB but no other libraries. It should generate no compilation errors. It should contain up to 20 `sorry` statements such that, once filled in, the file will type check and constitute a proof of an interesting mathematical result. It is OK to include some supporting code above the first node.
 
 - You may include as many formalized background statements as you would like, and add them as hypotheses to the statement of the main theorem. These will be identified as `hypothesis` nodes (see below).
 
