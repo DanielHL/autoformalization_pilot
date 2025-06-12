@@ -12,11 +12,15 @@ If you are a mathematician with little to no Lean experience, or a Lean enthusia
 
 - The problem should be *HARD*, requiring substantial mathematical reasoning to solve.
 
+- The problem should *NOT* be open. For any statement that requires the solver to provide a formal proof, the problem should provide a correct and precise natural language proof.
+
 - The problem should be unlikely to appear online in a human formalization project any time soon.
+
+- It is OK to omit some minor intermediate lemmas. This just makes the problem harder by essentially requiring the solver to discover and add those on its own!
 
 - The ultimate contribution should be a single Lean 4 file that may import from MATHLIB but no other libraries. It should generate no compilation errors. It should contain up to 20 `sorry` statements such that, once filled in, the file will type check and constitute a proof of an interesting mathematical result.
 
-- You may include as many background statements as you would like, and add them as hypotheses to the statement of the main theorem. These will be identified as `hypothesis` nodes (see below).
+- You may include as many formalized background statements as you would like, and add them as hypotheses to the statement of the main theorem. These will be identified as `hypothesis` nodes (see below).
 
 # Formatting the data
 A datapoint is a lean file with specific formatting requirements. The template is `fermat_last_theorem/fermat_last_theorem.lean.` This will NOT be a problem in the final dataset, as it is based on an active human formalization effort (https://github.com/ImperialCollegeLondon/FLT). It is also somewhat easier than the problems we hope to receive, because it black-boxes the most important parts of the proof.
@@ -41,7 +45,7 @@ def FreyCurve (P : FreyPackage) : WeierstrassCurve ℚ where
 
 The inputs field indicates the logical dependencies. They are hints to the solver.
 
-The node above is a complete definition. On the other hand, it is possible to give a definition that does require a sorry to be filled in. In the example, we do this by defining a structure with lemmas inside guaranteeing that any implementation satisfies the properties we need, and then the solver must find a constructor for this structure.
+The node above is a complete definition. On the other hand, it is possible to give a definition that does require a `sorry` to be filled in. In the template, we do this by defining a structure containing lemmas that guarantee that any implementation corresponds to the intended mathematical object. Then the solver must find a constructor for this structure, which amounts to formalizing a definition of the object. (In this case, the Galois representation associated to the p-torsion points of an Elliptic curve.)
 
 ```Lean
 /-! NODE
