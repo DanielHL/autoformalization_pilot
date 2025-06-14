@@ -12,11 +12,11 @@ class Node:
     """List of input node names, which can be used as hypotheses in the formal proof."""
     type: str = "theorem"
     """Type of the node, either 'theorem', 'definition', or 'hypothesis'."""
-    informal: str = ""
-    """Informal description of the theorem or concept."""
+    natural: str = ""
+    """natural description of the theorem or concept."""
     formal: str = ""
     """Formal statement of the theorem or definition, using Lean 4 syntax."""
-    informal_proof: str = ""
+    NL_proof: str = ""
     """Natural language proof of the theorem, blank if the node is a definition or hypothesis."""
 
 def parse_lean_file(file_path: str) -> list[Node]:
@@ -32,25 +32,37 @@ def parse_lean_file(file_path: str) -> list[Node]:
         name_match = re.search(r'\\name:\s*(.+)', section)
         inputs_match = re.search(r'\\inputs:\s*(\[[^\]]*\])', section)  # Match JSON-like list
         type_match = re.search(r'\\type:\s*(.+)', section)
-        informal_match = re.search(r'\\informal:\s*(.+)', section)
-        informal_proof_match = re.search(r'\\informal_proof:\s*(.+)', section)
+        natural_match = re.search(r'\\natural:\s*(.+)', section)
+        NL_proof_match = re.search(r'\\NL_proof:\s*(.+)', section)
         formal_match = re.search(r'-/(.+?)(?=/\-! NODE|$)', section, re.DOTALL)
 
         # Populate Node fields
         name = name_match.group(1).strip() if name_match else ""
         inputs = json.loads(inputs_match.group(1)) if inputs_match else []  # Parse as a Python list
         type = type_match.group(1).strip() if type_match else "theorem"
-        informal = informal_match.group(1).strip() if informal_match else ""
-        informal_proof = informal_proof_match.group(1).strip().rstrip('-/') if informal_proof_match else ""  # Remove trailing '-/'
+        natural = natural_match.group(1).strip() if natural_match else ""
+        NL_proof = parse_NL_proof(section)  # Use the new function to extract natural proof
         formal = formal_match.group(1).strip() if formal_match else ""
 
-        # Remove trailing newlines from formal field
-        formal = formal.rstrip("\n")
+        # Update the parser logic to strip leading and trailing spaces and newline characters for `formal` and `natural` fields
+        formal = formal.strip() if formal else ""
+        natural = natural.strip() if natural else ""
 
         # Create Node object and add to list
-        nodes.append(Node(name=name, inputs=inputs, type=type, informal=informal, formal=formal, informal_proof=informal_proof))
+        nodes.append(Node(name=name, inputs=inputs, type=type, natural=natural, formal=formal, NL_proof=NL_proof))
 
     return nodes
+
+def parse_NL_proof(content):
+    """Extracts the full natural proof text between \\NL_proof: and -/."""
+    start = content.find("\\NL_proof:")
+    if start == -1:
+        return None
+    start += len("\\NL_proof:")
+    end = content.find("-/", start)
+    if end == -1:
+        return None
+    return content[start:end].strip()
 
 def main():
     if len(sys.argv) != 2:
