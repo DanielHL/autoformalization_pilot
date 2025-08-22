@@ -5,17 +5,9 @@ A repository holding template examples for an autoformalization dataset. Each pr
 
 # Organization
 
-This project developed out of the workshop "Autoformalization for the working mathematician" at ICERM in April, 2025. The benchmark was conceived and designed by a groupd of researches from industry and mathematics:
+This project developed out of the workshop "Autoformalization for the working mathematician" at ICERM in April, 2025. The benchmark was conceived and designed by a group of researches from industry and mathematics:
 
-Jarod Alper (University of Washington)
-Daniel Halpern-Leistner (Cornell University)
-Albert Q. Jiang (Mistral)
-Alex Meiburg (Perimiter Institute and Harmonic)
-Kim Morrison (Lean FRO)
-Jason Rute (Mistral)
-Adam Topaz (University of Alberta)
-Sean Welleck (Carnegie Melon University)
-Zeyu Zheng (Carnegie Melon University)
+Jarod Alper (University of Washington); Daniel Halpern-Leistner (Cornell University); Albert Q. Jiang (Mistral); Alex Meiburg (Perimiter Institute and Harmonic); Oleg Mürk (OpenAI); Kim Morrison (Lean FRO); Jason Rute (Mistral); Adam Topaz (University of Alberta); Sean Welleck (Carnegie Melon University); Zeyu Zheng (Carnegie Melon University)
 
 # How to contribute
 At the moment, we are collecting problems privately. If you are interested in contributing, please contact me: daniel.hl@cornell.edu
