@@ -96,8 +96,9 @@ def main():
     print(f"Total occurrences of 'sorry' in formal statements: {sorry_count}")
 
     for node in nodes:
-        print(node.formal)
-        print("\n")
+        if node.formal.count("sorry") > 0:
+            print(node.formal)
+            print("\n")
 
 if __name__ == "__main__":
     main()

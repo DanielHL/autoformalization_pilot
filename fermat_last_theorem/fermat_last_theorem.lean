@@ -1,4 +1,6 @@
--- This document is based on the leanblueprint for the ongoing project to formalize Fermat's last theorem here: https://github.com/ImperialCollegeLondon/FLT
+/-!
+This problem is based on the leanblueprint for the ongoing project to formalize Fermat's last theorem here: https://github.com/ImperialCollegeLondon/FLT
+-/
 
 import Mathlib.Tactic
 import Mathlib.NumberTheory.FLT.Basic
