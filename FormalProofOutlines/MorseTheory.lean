@@ -6,6 +6,7 @@ import Mathlib.Topology.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 
@@ -15,7 +16,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Basic
   where `H` is modelled on a real normed space `E`.
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 variable {H : Type*} [TopologicalSpace H]
 variable {I : ModelWithCorners ℝ E H}
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -87,7 +88,19 @@ def SublevelSet (f : M → ℝ) (c : ℝ) : Set M :=
   \NL_proof: By Taylor expansion and induction using the non-degeneracy of the Hessian.
 -/
 theorem MorseLemma [IsManifold I ⊤ M] (f : M → ℝ) (p : M) (idx : ℕ)
-    (h : NonDegenerateCriticalPoint I f p idx) : True := sorry
+    (h : NonDegenerateCriticalPoint I f p idx)
+    (hidx : idx ≤ Module.finrank ℝ E) :
+    ∃ (φ : PartialDiffeomorph I (modelWithCornersSelf ℝ (Fin (Module.finrank ℝ E) → ℝ))
+            M (Fin (Module.finrank ℝ E) → ℝ) ⊤),
+      p ∈ φ.source ∧
+      φ p = 0 ∧
+      ∀ x ∈ φ.source,
+        f x = f p
+          - ∑ i : Fin idx,
+              (φ x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.castAdd (Module.finrank ℝ E - idx) i))) ^ 2
+          + ∑ i : Fin (Module.finrank ℝ E - idx),
+              (φ x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.natAdd idx i))) ^ 2 := by
+  sorry
 
 /-! NODE
   \name: GradientLikeVectorField
