@@ -1,4 +1,4 @@
--- This problem is based on the leanblueprint for the ongoing project to formalize Fermat's last theorem here: https://github.com/ImperialCollegeLondon/FLT
+-- This document is based on the leanblueprint for the ongoing project to formalize Fermat's last theorem here: https://github.com/ImperialCollegeLondon/FLT
 
 import Mathlib.Tactic
 import Mathlib.NumberTheory.FLT.Basic
@@ -86,26 +86,26 @@ def FreyCurve (P : FreyPackage) : WeierstrassCurve ℚ where
   \natural: The Galois module associated to a Weierstrass curve $E$ over $\mathbb{Q}$ and a prime $p$ is the module of $p$-torsion points of $E$ over an algebraic closure $K$ of $\mathbb{Q}$, equipped with the canonical action of the absolute Galois group $Gal(K/\mathbb{Q})$.
   \NL_proof:
 -/
-structure PTorsionRepresentation (K : Type) [Field K] [Algebra ℚ K] (E : WeierstrassCurve ℚ) (p : ℕ) [Fact p.Prime] where
+structure PTorsionRepresentation (K : Type) [Field K] [DecidableEq K] [Algebra ℚ K] (E : WeierstrassCurve ℚ) (p : ℕ) [Fact p.Prime] where
+  isElliptic : E.IsElliptic
   carrier : Type
   isAddCommGroup : AddCommGroup carrier
   isZModPModule : Module (ZMod p) carrier
   isGaloisAction : MulAction (K ≃ₐ[ℚ] K) carrier
-  -- The explicit group homomorphism from carrier to E(K)
   φ : letI := isAddCommGroup
+      letI := isElliptic
       carrier →+ (E.baseChange K).toAffine.Point
-  -- 1) φ is injective
   φ_injective : Function.Injective φ
-  -- 2) The image of φ is exactly the p-torsion subgroup
   φ_image : ∀ (P : (E.baseChange K).toAffine.Point),
-    P ∈ Set.range φ ↔ p • P = 0
-  -- 3) φ intertwines the Galois actions
+      letI := isElliptic
+      P ∈ Set.range φ ↔ p • P = 0
   φ_equivariant : ∀ (g : K ≃ₐ[ℚ] K) (m : carrier),
     letI := isAddCommGroup
     letI := isGaloisAction
+    letI := isElliptic
     φ (g • m) = WeierstrassCurve.Affine.Point.map g.toAlgHom (φ m)
 
-def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+def GaloisModule (K : Type) [Field K] [DecidableEq K] [Algebra ℚ K] [IsAlgClosure ℚ K]
     (E : WeierstrassCurve ℚ) (p : ℕ) [Fact p.Prime] :
     PTorsionRepresentation K E p := sorry
 
@@ -116,8 +116,8 @@ def GaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
   \natural: The torsion Galois representation of the Frey curve associated to a Frey package is the Galois module associated to the Frey curve and the prime $p$ of the Frey package.
   \NL_proof:
 -/
-def FreyCurveGaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K]
-    (P : FreyPackage) [h : Fact P.p.Prime] :
+def FreyCurveGaloisModule (K : Type) [Field K] [DecidableEq K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+    (P : FreyPackage) [Fact P.p.Prime] :
     PTorsionRepresentation K (FreyCurve P) P.p :=
   GaloisModule K (FreyCurve P) P.p
 
@@ -129,7 +129,8 @@ def FreyCurveGaloisModule (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ
   \NL_proof:
 -/
 def Wiles_Frey : Prop :=
-  ∀ (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K] (P : FreyPackage) [h : Fact P.p.Prime],
+  ∀ (K : Type) [Field K] [DecidableEq K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+    (P : FreyPackage) [Fact P.p.Prime],
     letI := (FreyCurveGaloisModule K P).isZModPModule
     letI := (FreyCurveGaloisModule K P).isAddCommGroup
     ¬ IsSimpleModule (ZMod P.p) (FreyCurveGaloisModule K P).carrier
@@ -142,7 +143,8 @@ def Wiles_Frey : Prop :=
   \NL_proof:
 -/
 def Mazur_Frey : Prop :=
-  ∀ (K : Type) [Field K] [Algebra ℚ K] [IsAlgClosure ℚ K] (P : FreyPackage) [h : Fact P.p.Prime],
+  ∀ (K : Type) [Field K] [DecidableEq K] [Algebra ℚ K] [IsAlgClosure ℚ K]
+    (P : FreyPackage) [Fact P.p.Prime],
     letI := (FreyCurveGaloisModule K P).isZModPModule
     letI := (FreyCurveGaloisModule K P).isAddCommGroup
     IsSimpleModule (ZMod P.p) (FreyCurveGaloisModule K P).carrier
