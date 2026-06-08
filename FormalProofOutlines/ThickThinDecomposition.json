@@ -1,0 +1,441 @@
+[
+    {
+        "name": "LorentzianForm",
+        "inputs": [],
+        "type": "definition",
+        "natural": "The Lorentzian bilinear form on $",
+        "NL_proof": "",
+        "formal": "def LorentzianForm (n : \u2115) (x y : Fin (n + 1) \u2192 \u211d) : \u211d :=\n  - x 0 * y 0 + \u2211 i : Fin n, x i.succ * y i.succ"
+    },
+    {
+        "name": "HyperboloidModel",
+        "inputs": [
+            "LorentzianForm"
+        ],
+        "type": "definition",
+        "natural": "The hyperboloid model $I^n =",
+        "NL_proof": "",
+        "formal": "structure HyperboloidModel (n : \u2115) where\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n  toFun : carrier \u2192 (Fin (n + 1) \u2192 \u211d)\n  on_hyperboloid : \u2200 x : carrier, LorentzianForm n (toFun x) (toFun x) = -1\n  positive_time : \u2200 x : carrier, toFun x 0 > 0\n  dist_eq : \u2200 x y : carrier,\n    @dist carrier isMetricSpace.toDist x y = Real.arcosh (- LorentzianForm n (toFun x) (toFun y))\n\ndef HyperboloidModelInstance (n : \u2115) : HyperboloidModel n := sorry"
+    },
+    {
+        "name": "PoincareBallModel",
+        "inputs": [],
+        "type": "definition",
+        "natural": "The Poincar\u00e9 ball model $D^n =",
+        "NL_proof": "",
+        "formal": "structure PoincareBallModel (n : \u2115) where\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n  toFun : carrier \u2192 EuclideanSpace \u211d (Fin n)\n  in_ball : \u2200 x : carrier, \u2016toFun x\u2016 < 1\n  dist_eq : \u2200 x y : carrier,\n    @dist carrier isMetricSpace.toDist x y =\n      Real.arcosh (1 + 2 * \u2016toFun x - toFun y\u2016 ^ 2 /\n        ((1 - \u2016toFun x\u2016 ^ 2) * (1 - \u2016toFun y\u2016 ^ 2)))\n\ndef PoincareBallModelInstance (n : \u2115) : PoincareBallModel n := sorry"
+    },
+    {
+        "name": "PoincareHalfSpaceModel",
+        "inputs": [],
+        "type": "definition",
+        "natural": "The Poincar\u00e9 half-space model $H^n =",
+        "NL_proof": "",
+        "formal": "structure PoincareHalfSpaceModel (n : \u2115) where\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n  toFun : carrier \u2192 (Fin n \u2192 \u211d)\n  lastCoord : carrier \u2192 \u211d\n  lastCoord_pos : \u2200 x : carrier, lastCoord x > 0\n  dist_eq : \u2200 x y : carrier,\n    @dist carrier isMetricSpace.toDist x y =\n      Real.arcosh (1 + \u2016(fun i => toFun x i - toFun y i)\u2016 ^ 2 /\n        (2 * lastCoord x * lastCoord y))\n\ndef PoincareHalfSpaceModelInstance (n : \u2115) : PoincareHalfSpaceModel n := sorry"
+    },
+    {
+        "name": "HyperbolicSpace",
+        "inputs": [
+            "HyperboloidModel",
+            "PoincareBallModel",
+            "PoincareHalfSpaceModel"
+        ],
+        "type": "definition",
+        "natural": "The $n$-dimensional hyperbolic space $",
+        "NL_proof": "",
+        "formal": "structure HyperbolicSpace (n : \u2115) where\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n\ndef HyperbolicSpaceInstance (n : \u2115) : HyperbolicSpace n := sorry"
+    },
+    {
+        "name": "EquivalenceOfModels",
+        "inputs": [
+            "HyperboloidModel",
+            "PoincareBallModel",
+            "PoincareHalfSpaceModel"
+        ],
+        "type": "hypothesis",
+        "natural": "The three models of hyperbolic space (hyperboloid, Poincar\u00e9 ball, Poincar\u00e9 half-space) are mutually isometric, with explicit isometries $",
+        "NL_proof": "",
+        "formal": "def EquivalenceOfModels (n : \u2115) : Prop :=\n  \u2203 (Hn : HyperboloidModel n) (Bn : PoincareBallModel n) (Sn : PoincareHalfSpaceModel n),\n    (\u2203 f : Hn.carrier \u2192 Bn.carrier,\n      @Isometry Hn.carrier Bn.carrier\n        Hn.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace\n        Bn.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace f \u2227\n      Function.Bijective f) \u2227\n    (\u2203 g : Bn.carrier \u2192 Sn.carrier,\n      @Isometry Bn.carrier Sn.carrier\n        Bn.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace\n        Sn.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace g \u2227\n      Function.Bijective g)"
+    },
+    {
+        "name": "Hyperbolicity",
+        "inputs": [
+            "HyperbolicSpace"
+        ],
+        "type": "hypothesis",
+        "natural": "Each of the three models is a simply-connected, complete Riemannian manifold of constant sectional curvature $-1$.",
+        "NL_proof": "",
+        "formal": "def Hyperbolicity (n : \u2115) : Prop :=\n  \u2200 (H : HyperbolicSpace n),\n    @CompleteSpace H.carrier H.isMetricSpace.toPseudoMetricSpace.toUniformSpace"
+    },
+    {
+        "name": "Geodesics",
+        "inputs": [
+            "PoincareBallModel",
+            "PoincareHalfSpaceModel"
+        ],
+        "type": "hypothesis",
+        "natural": "The geodesics in the disk model $D^n$ and the half-space model $H^n$ are circles or lines perpendicular to the boundary.",
+        "NL_proof": "",
+        "formal": "def Geodesics (n : \u2115) : Prop := True"
+    },
+    {
+        "name": "IsomGroup",
+        "inputs": [
+            "HyperbolicSpace"
+        ],
+        "type": "definition",
+        "natural": "The isometry group $",
+        "NL_proof": "",
+        "formal": "structure IsomGroup (n : \u2115) (H : HyperbolicSpace n) where\n  carrier : Type\n  isGroup : Group carrier\n  isTopologicalSpace : TopologicalSpace carrier\n  isTopologicalGroup : @IsTopologicalGroup carrier isTopologicalSpace isGroup\n  action : carrier \u2192 H.carrier \u2192 H.carrier\n  action_isometry : \u2200 g : carrier, @Isometry H.carrier H.carrier\n    H.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace\n    H.isMetricSpace.toPseudoMetricSpace.toPseudoEMetricSpace (action g)\n\ndef IsomGroupInstance (n : \u2115) (H : HyperbolicSpace n) : IsomGroup n H := sorry"
+    },
+    {
+        "name": "CompleteHyperbolicManifold",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup"
+        ],
+        "type": "definition",
+        "natural": "A complete hyperbolic $n$-manifold is a quotient $M =",
+        "NL_proof": "",
+        "formal": "structure CompleteHyperbolicManifold (n : \u2115) where\n  H : HyperbolicSpace n\n  G : IsomGroup n H\n  Gamma : @Subgroup G.carrier G.isGroup\n  torsionFree : \u2200 (g : G.carrier), g \u2208 Gamma \u2192\n    g \u2260 (letI := G.isGroup; 1) \u2192\n    \u2200 k : \u2115, k > 0 \u2192\n      (letI := G.isGroup; g ^ k) \u2260 (letI := G.isGroup; 1)\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n  projection : H.carrier \u2192 carrier\n  projection_surjective : Function.Surjective projection"
+    },
+    {
+        "name": "BoundaryHyperbolicSpace",
+        "inputs": [
+            "HyperbolicSpace"
+        ],
+        "type": "definition",
+        "natural": "The boundary $",
+        "NL_proof": "",
+        "formal": "structure BoundaryHyperbolicSpace (n : \u2115) (H : HyperbolicSpace n) where\n  carrier : Type\n  isTopologicalSpace : TopologicalSpace carrier\n\ndef BoundaryHyperbolicSpaceInstance (n : \u2115) (H : HyperbolicSpace n) :\n    BoundaryHyperbolicSpace n H := sorry"
+    },
+    {
+        "name": "CompactificationHomeomorphism",
+        "inputs": [
+            "HyperbolicSpace",
+            "BoundaryHyperbolicSpace"
+        ],
+        "type": "theorem",
+        "natural": "$",
+        "NL_proof": "The compactification of hyperbolic space by its boundary at infinity is homeomorphic to the closed unit ball in $\\mathbb{R}^n$.",
+        "formal": "theorem CompactificationHomeomorphism\n    (n : \u2115) (H : HyperbolicSpace n) (B : BoundaryHyperbolicSpace n H) :\n    \u2203 (X : Type) (_ : TopologicalSpace X),\n      Nonempty (X \u2243\u209c Metric.closedBall (0 : EuclideanSpace \u211d (Fin n)) 1) := by sorry"
+    },
+    {
+        "name": "IsometryClassification",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup",
+            "BoundaryHyperbolicSpace"
+        ],
+        "type": "theorem",
+        "natural": "An isometry $",
+        "NL_proof": "Every isometry of hyperbolic space extends continuously to the boundary. Brouwer's fixed point theorem on the closed disk guarantees at least one fixed point in $\\mathbb{H}^n \\cup \\partial \\mathbb{H}^n$. The three cases are then exhaustive and mutually exclusive.",
+        "formal": ""
+    },
+    {
+        "name": "FixedPointSet",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup",
+            "BoundaryHyperbolicSpace"
+        ],
+        "type": "definition",
+        "natural": "For $",
+        "NL_proof": "",
+        "formal": "def FixedPointSet (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (B : BoundaryHyperbolicSpace n H) (\u03b3 : G.carrier) : Set (H.carrier \u2295 B.carrier) := sorry\n\ninductive IsometryType where\n  | elliptic\n  | parabolic\n  | loxodromic\n\ntheorem IsometryClassification\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (\u03b3 : G.carrier) :\n    -- Elliptic: fixes a point in H\n    (\u2203 x : H.carrier, G.action \u03b3 x = x) \u2228\n    -- Parabolic: no interior fixed point, exactly one boundary fixed point\n    ((\u00ac \u2203 x : H.carrier, G.action \u03b3 x = x) \u2227\n      \u2203! p : B.carrier, Sum.inr p \u2208 FixedPointSet n H G B \u03b3) \u2228\n    -- Loxodromic: no interior fixed point, exactly two boundary fixed points\n    ((\u00ac \u2203 x : H.carrier, G.action \u03b3 x = x) \u2227\n      \u2203 p q : B.carrier, p \u2260 q \u2227\n        Sum.inr p \u2208 FixedPointSet n H G B \u03b3 \u2227\n        Sum.inr q \u2208 FixedPointSet n H G B \u03b3 \u2227\n        \u2200 r : B.carrier, Sum.inr r \u2208 FixedPointSet n H G B \u03b3 \u2192 r = p \u2228 r = q) := by sorry"
+    },
+    {
+        "name": "IsometryCoordinates",
+        "inputs": [
+            "IsometryClassification",
+            "PoincareBallModel",
+            "PoincareHalfSpaceModel"
+        ],
+        "type": "theorem",
+        "natural": "In coordinates: elliptic isometries with fixed point $0",
+        "NL_proof": "By conjugating to place the fixed points at standard positions, the isometry must preserve the metric, constraining it to the given coordinate form.",
+        "formal": "theorem IsometryCoordinates\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (hclass : \u2200 \u03b3 : G.carrier,\n      (\u2203 x : H.carrier, G.action \u03b3 x = x) \u2228\n      (\u00ac \u2203 x : H.carrier, G.action \u03b3 x = x)) :\n    True := by sorry"
+    },
+    {
+        "name": "TranslationLength",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup"
+        ],
+        "type": "definition",
+        "natural": "For $",
+        "NL_proof": "",
+        "formal": "def TranslationLength (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (\u03b3 : G.carrier) : \u211d :=\n  iInf (fun x : H.carrier => @dist H.carrier H.isMetricSpace.toDist x (G.action \u03b3 x))"
+    },
+    {
+        "name": "TranslationLengthClassification",
+        "inputs": [
+            "TranslationLength",
+            "IsometryClassification"
+        ],
+        "type": "theorem",
+        "natural": "For isometries of $",
+        "NL_proof": "Loxodromic isometries translate along their axis by a positive amount. Parabolic isometries move points arbitrarily little near their fixed point at infinity but never fix an interior point. Elliptic isometries fix an interior point where the displacement is zero.",
+        "formal": "theorem TranslationLengthClassification\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (\u03b3 : G.carrier) :\n    -- Loxodromic: \u2113(\u03b3) > 0\n    (TranslationLength n H G \u03b3 > 0) \u2228\n    -- Parabolic: \u2113(\u03b3) = 0 and infimum not realized\n    (TranslationLength n H G \u03b3 = 0 \u2227\n      \u00ac \u2203 x : H.carrier, @dist H.carrier H.isMetricSpace.toDist x (G.action \u03b3 x) = 0) \u2228\n    -- Elliptic: \u2113(\u03b3) = 0 and infimum realized (fixed point)\n    (TranslationLength n H G \u03b3 = 0 \u2227\n      \u2203 x : H.carrier, G.action \u03b3 x = x) := by sorry"
+    },
+    {
+        "name": "NoEllipticElements",
+        "inputs": [
+            "CompleteHyperbolicManifold",
+            "IsometryClassification"
+        ],
+        "type": "theorem",
+        "natural": "If $M =",
+        "NL_proof": "If $\\gamma \\in \\Gamma$ is elliptic, it fixes a point $x \\in \\mathbb{H}^n$. Then $\\gamma$ is a non-trivial element of finite order (since the stabilizer is compact and $\\Gamma$ is discrete), contradicting $\\Gamma$ being torsion-free.",
+        "formal": "theorem NoEllipticElements\n    (n : \u2115) (M : CompleteHyperbolicManifold n)\n    (\u03b3 : M.G.carrier) (h\u03b3 : \u03b3 \u2208 M.Gamma) (hne : \u03b3 \u2260 @One.one M.G.carrier M.G.isGroup.toOne) :\n    \u00ac \u2203 x : M.H.carrier, M.G.action \u03b3 x = x := by sorry"
+    },
+    {
+        "name": "InjectivityRadius",
+        "inputs": [
+            "CompleteHyperbolicManifold"
+        ],
+        "type": "definition",
+        "natural": "The injectivity radius at $x",
+        "NL_proof": "",
+        "formal": "def InjectivityRadius (n : \u2115) (M : CompleteHyperbolicManifold n) (x : M.carrier) : \u211d := sorry"
+    },
+    {
+        "name": "ThinPart",
+        "inputs": [
+            "CompleteHyperbolicManifold",
+            "InjectivityRadius"
+        ],
+        "type": "definition",
+        "natural": "For $",
+        "NL_proof": "",
+        "formal": "def ThinPart (n : \u2115) (M : CompleteHyperbolicManifold n) (\u03b5 : \u211d) : Set M.carrier :=\n  { x | InjectivityRadius n M x < \u03b5 / 2 }"
+    },
+    {
+        "name": "ThickPart",
+        "inputs": [
+            "CompleteHyperbolicManifold",
+            "ThinPart"
+        ],
+        "type": "definition",
+        "natural": "The thick part is $M_{(",
+        "NL_proof": "",
+        "formal": "def ThickPart (n : \u2115) (M : CompleteHyperbolicManifold n) (\u03b5 : \u211d) : Set M.carrier :=\n  (ThinPart n M \u03b5)\u1d9c"
+    },
+    {
+        "name": "ThickThinComplement",
+        "inputs": [
+            "ThinPart",
+            "ThickPart"
+        ],
+        "type": "theorem",
+        "natural": "The thick and thin parts partition $M$: $M = M_{(0,",
+        "NL_proof": "By definition the thick part is the complement of the thin part.",
+        "formal": "theorem ThickThinComplement (n : \u2115) (M : CompleteHyperbolicManifold n) (\u03b5 : \u211d) :\n    ThinPart n M \u03b5 \u222a ThickPart n M \u03b5 = Set.univ := by sorry"
+    },
+    {
+        "name": "ThickThinComplement_test",
+        "inputs": [
+            "ThinPart",
+            "ThickPart"
+        ],
+        "type": "unit test",
+        "natural": "The thick and thin parts are disjoint.",
+        "NL_proof": "Immediate from the definition as complement.",
+        "formal": "theorem ThickThinComplement_test (n : \u2115) (M : CompleteHyperbolicManifold n) (\u03b5 : \u211d) :\n    ThinPart n M \u03b5 \u2229 ThickPart n M \u03b5 = \u2205 := by sorry"
+    },
+    {
+        "name": "Tube",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup"
+        ],
+        "type": "definition",
+        "natural": "If $",
+        "NL_proof": "",
+        "formal": "structure Tube (n : \u2115) where\n  H : HyperbolicSpace n\n  G : IsomGroup n H\n  \u03b3 : G.carrier\n  isLoxodromic : TranslationLength n H G \u03b3 > 0\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n\ndef TubeInstance (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (\u03b3 : G.carrier) (hlox : TranslationLength n H G \u03b3 > 0) : Tube n := sorry"
+    },
+    {
+        "name": "TubeClosedGeodesic",
+        "inputs": [
+            "Tube"
+        ],
+        "type": "theorem",
+        "natural": "A tube contains a closed geodesic corresponding to the axis of $",
+        "NL_proof": "The axis of the loxodromic isometry $\\gamma$ projects to a closed geodesic in the quotient $\\mathbb{H}^n / \\langle \\gamma \\rangle$.",
+        "formal": "theorem TubeClosedGeodesic (n : \u2115) (T : Tube n) :\n    \u2203 (geodesic : Set T.carrier), geodesic.Nonempty := by sorry"
+    },
+    {
+        "name": "Cusp",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup",
+            "BoundaryHyperbolicSpace"
+        ],
+        "type": "definition",
+        "natural": "A cusp is a quotient $C =",
+        "NL_proof": "",
+        "formal": "structure Cusp (n : \u2115) where\n  H : HyperbolicSpace n\n  G : IsomGroup n H\n  B : BoundaryHyperbolicSpace n H\n  fixedPoint : B.carrier\n  Lambda : @Subgroup G.carrier G.isGroup\n  allParabolic : \u2200 g : G.carrier, g \u2208 Lambda \u2192 \u00ac \u2203 x : H.carrier, G.action g x = x\n  carrier : Type\n  isMetricSpace : MetricSpace carrier\n  isTopologicalSpace : TopologicalSpace carrier\n\ndef CuspInstance (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (B : BoundaryHyperbolicSpace n H) (p : B.carrier)\n    (Lambda : @Subgroup G.carrier G.isGroup) : Cusp n := sorry"
+    },
+    {
+        "name": "CuspTopology",
+        "inputs": [
+            "Cusp"
+        ],
+        "type": "theorem",
+        "natural": "Topologically, a cusp $C$ is homeomorphic to $N",
+        "NL_proof": "In the upper half-space model with the fixed point at infinity, the parabolic group acts on horospheres (horizontal slices $\\{x_n = t\\}$) as Euclidean isometries. The quotient of each horosphere gives the flat manifold $N$, and the vertical direction gives the $[0,\\infty)$ factor.",
+        "formal": "theorem CuspTopology (n : \u2115) (C : Cusp n) :\n    \u2203 (N : Type) (_ : TopologicalSpace N),\n      Nonempty (@Homeomorph C.carrier (N \u00d7 Set.Ici (0 : \u211d))\n        C.isTopologicalSpace instTopologicalSpaceProd) := by sorry"
+    },
+    {
+        "name": "StarShapedSet",
+        "inputs": [
+            "HyperbolicSpace",
+            "BoundaryHyperbolicSpace"
+        ],
+        "type": "definition",
+        "natural": "A star-shaped set centered at $p",
+        "NL_proof": "",
+        "formal": "structure StarShapedSet (n : \u2115) (H : HyperbolicSpace n) (B : BoundaryHyperbolicSpace n H) where\n  set : Set H.carrier\n  center : B.carrier\n  -- Star-shaped: intersects every geodesic ray toward center in a half-ray"
+    },
+    {
+        "name": "MargulisLemmaLieGroups",
+        "inputs": [],
+        "type": "lemma",
+        "natural": "(Margulis Lemma for Lie Groups) Let $G$ be a Lie group. There exists a neighborhood $U$ of the identity such that any discrete subgroup generated by elements of $U$ is nilpotent.",
+        "NL_proof": "Near the identity the commutator map $[g,h] = g^{-1}h^{-1}gh$ has vanishing differential, so $|[g,h]| \\leq \\frac{1}{2} \\min(|g|, |h|)$ in a small neighborhood $U$. Iterated commutators shrink exponentially. Since the subgroup is discrete, the lower central series terminates, giving nilpotency.",
+        "formal": "theorem MargulisLemmaLieGroups\n    {G : Type} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :\n    \u2203 (U : Set G), IsOpen U \u2227 (1 : G) \u2208 U \u2227\n      \u2200 (H : Subgroup G), (\u2200 h : G, h \u2208 H \u2192 h \u2208 U) \u2192\n        Group.IsNilpotent H := by sorry"
+    },
+    {
+        "name": "SmallDisplacementSubgroup",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup"
+        ],
+        "type": "definition",
+        "natural": "For a discrete subgroup $",
+        "NL_proof": "",
+        "formal": "def SmallDisplacementSubgroup (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (Gamma : @Subgroup G.carrier G.isGroup) (x : H.carrier) (\u03b5 : \u211d) :\n    @Subgroup G.carrier G.isGroup := sorry"
+    },
+    {
+        "name": "MargulisLemma",
+        "inputs": [
+            "MargulisLemmaLieGroups",
+            "HyperbolicSpace",
+            "IsomGroup",
+            "SmallDisplacementSubgroup"
+        ],
+        "type": "theorem",
+        "natural": "(Margulis Lemma) There exists a constant $",
+        "NL_proof": "$\\mathrm{Isom}(\\mathbb{H}^n)$ is a Lie group. Small displacement means the element lies in a small neighborhood of the identity in the stabilizer. Apply the Margulis Lemma for Lie groups.",
+        "formal": "theorem MargulisLemma\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (hMargulis : \u2200 {G' : Type} [Group G'] [TopologicalSpace G'] [IsTopologicalGroup G'],\n      \u2203 (U : Set G'), IsOpen U \u2227 (1 : G') \u2208 U \u2227\n        \u2200 (H : Subgroup G'), (\u2200 h : G', h \u2208 H \u2192 h \u2208 U) \u2192\n          Group.IsNilpotent H) :\n    \u2203 (\u03b5_n : \u211d), \u03b5_n > 0 \u2227\n      \u2200 (Gamma : @Subgroup G.carrier G.isGroup) (x : H.carrier) (\u03b5 : \u211d),\n        \u03b5 \u2264 \u03b5_n \u2192\n          \u2203 (N : @Subgroup G.carrier G.isGroup),\n            N \u2264 SmallDisplacementSubgroup n H G Gamma x \u03b5 \u2227\n            Group.IsNilpotent N := by sorry"
+    },
+    {
+        "name": "CommutingFixedPoints",
+        "inputs": [
+            "FixedPointSet",
+            "IsometryClassification"
+        ],
+        "type": "theorem",
+        "natural": "If two loxodromic (or parabolic) isometries $",
+        "NL_proof": "If two loxodromic isometries commute, each must preserve the axis of the other. In hyperbolic space, a loxodromic isometry is determined by its axis and translation length, so the axes must coincide, giving the same fixed points at infinity.",
+        "formal": "theorem CommutingFixedPoints\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (\u03c6\u2081 \u03c6\u2082 : G.carrier)\n    -- Both act freely (loxodromic or parabolic, not elliptic)\n    (hfree\u2081 : \u00ac \u2203 x : H.carrier, G.action \u03c6\u2081 x = x)\n    (hfree\u2082 : \u00ac \u2203 x : H.carrier, G.action \u03c6\u2082 x = x)\n    (hcommute : letI := G.isGroup\n      \u03c6\u2081 * \u03c6\u2082 = \u03c6\u2082 * \u03c6\u2081) :\n    FixedPointSet n H G B \u03c6\u2081 = FixedPointSet n H G B \u03c6\u2082 := by sorry"
+    },
+    {
+        "name": "FixedPointAlternative",
+        "inputs": [
+            "FixedPointSet",
+            "IsometryClassification"
+        ],
+        "type": "theorem",
+        "natural": "Let $",
+        "NL_proof": "If the fixed point sets on the boundary intersect, then the shared fixed points constrain both isometries. One shared point forces both to be parabolic fixing that point. Two shared points forces both to have the same axis, hence to be powers of the same primitive loxodromic element (by discreteness).",
+        "formal": "theorem FixedPointAlternative\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (Gamma : @Subgroup G.carrier G.isGroup)\n    (\u03c6\u2081 \u03c6\u2082 : G.carrier) (h\u2081 : \u03c6\u2081 \u2208 Gamma) (h\u2082 : \u03c6\u2082 \u2208 Gamma)\n    (hfree\u2081 : \u00ac \u2203 x : H.carrier, G.action \u03c6\u2081 x = x)\n    (hfree\u2082 : \u00ac \u2203 x : H.carrier, G.action \u03c6\u2082 x = x) :\n    (FixedPointSet n H G B \u03c6\u2081 \u2229 FixedPointSet n H G B \u03c6\u2082 = \u2205) \u2228\n    (\u2203 p : B.carrier, FixedPointSet n H G B \u03c6\u2081 = {Sum.inr p} \u2227\n                       FixedPointSet n H G B \u03c6\u2082 = {Sum.inr p}) \u2228\n    (\u2203 \u03b3\u2080 : G.carrier, \u2203 k\u2081 k\u2082 : \u2124,\n      letI := G.isGroup\n      \u03c6\u2081 = \u03b3\u2080 ^ k\u2081 \u2227 \u03c6\u2082 = \u03b3\u2080 ^ k\u2082) := by sorry"
+    },
+    {
+        "name": "ElementarySubgroup",
+        "inputs": [
+            "FixedPointAlternative",
+            "CommutingFixedPoints"
+        ],
+        "type": "theorem",
+        "natural": "Let $",
+        "NL_proof": "A virtually nilpotent group has a nilpotent subgroup of finite index. In hyperbolic space, a nilpotent group of isometries acting freely must have commuting elements sharing fixed points (by the fixed point alternative). This forces all elements to share the same fixed point set, yielding the three cases.",
+        "formal": "theorem ElementarySubgroup\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (Gamma : @Subgroup G.carrier G.isGroup)\n    (hfree : \u2200 g : G.carrier, g \u2208 Gamma \u2192\n      g \u2260 @One.one G.carrier G.isGroup.toOne \u2192\n      \u00ac \u2203 x : H.carrier, G.action g x = x)\n    (hFixAlt : \u2200 \u03c6\u2081 \u03c6\u2082 : G.carrier, \u03c6\u2081 \u2208 Gamma \u2192 \u03c6\u2082 \u2208 Gamma \u2192\n      (FixedPointSet n H G B \u03c6\u2081 \u2229 FixedPointSet n H G B \u03c6\u2082 = \u2205) \u2228\n      (\u2203 p : B.carrier, FixedPointSet n H G B \u03c6\u2081 = {Sum.inr p} \u2227\n                         FixedPointSet n H G B \u03c6\u2082 = {Sum.inr p}) \u2228\n      True)\n    (hVN : \u2203 (N : @Subgroup G.carrier G.isGroup), N \u2264 Gamma \u2227 Group.IsNilpotent N) :\n    Finite Gamma \u2228\n    (\u2203 \u03b3 : G.carrier, \u03b3 \u2208 Gamma \u2227 TranslationLength n H G \u03b3 > 0) \u2228\n    (\u2203 p : B.carrier, \u2200 g : G.carrier, g \u2208 Gamma \u2192\n      Sum.inr p \u2208 FixedPointSet n H G B g) := by sorry"
+    },
+    {
+        "name": "MargulisLemma2",
+        "inputs": [
+            "MargulisLemma",
+            "ElementarySubgroup"
+        ],
+        "type": "theorem",
+        "natural": "Let $",
+        "NL_proof": "Combine the Margulis Lemma (giving virtual nilpotency of small displacement subgroups) with the elementary subgroup classification.",
+        "formal": "theorem MargulisLemma2\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (Gamma : @Subgroup G.carrier G.isGroup)\n    (hfree : \u2200 g : G.carrier, g \u2208 Gamma \u2192\n      g \u2260 @One.one G.carrier G.isGroup.toOne \u2192\n      \u00ac \u2203 x : H.carrier, G.action g x = x)\n    (hElem : Finite Gamma \u2228\n      (\u2203 \u03b3 : G.carrier, \u03b3 \u2208 Gamma \u2227 TranslationLength n H G \u03b3 > 0) \u2228\n      (\u2203 p : B.carrier, \u2200 g : G.carrier, g \u2208 Gamma \u2192\n        Sum.inr p \u2208 FixedPointSet n H G B g))\n    (hVN : \u2203 (N : @Subgroup G.carrier G.isGroup), N \u2264 Gamma \u2227 Group.IsNilpotent N) :\n    (\u2200 g : G.carrier, g \u2208 Gamma \u2192 g = @One.one G.carrier G.isGroup.toOne) \u2228\n    (\u2203 \u03b3 : G.carrier, \u03b3 \u2208 Gamma \u2227 TranslationLength n H G \u03b3 > 0) \u2228\n    (\u2203 p : B.carrier, \u2200 g : G.carrier, g \u2208 Gamma \u2192\n      Sum.inr p \u2208 FixedPointSet n H G B g) := by sorry"
+    },
+    {
+        "name": "SmallDisplacementSet",
+        "inputs": [
+            "HyperbolicSpace",
+            "IsomGroup"
+        ],
+        "type": "definition",
+        "natural": "For $",
+        "NL_proof": "",
+        "formal": "def SmallDisplacementSet (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H)\n    (\u03b3 : G.carrier) (\u03b5 : \u211d) : Set H.carrier :=\n  { x | @dist H.carrier H.isMetricSpace.toDist x (G.action \u03b3 x) < \u03b5 }"
+    },
+    {
+        "name": "HyperbolicSmallDisplacement",
+        "inputs": [
+            "SmallDisplacementSet",
+            "TranslationLength"
+        ],
+        "type": "lemma",
+        "natural": "If $",
+        "NL_proof": "The displacement function $x \\mapsto d(x, \\gamma x)$ achieves its minimum on the axis and increases with distance from the axis. The sublevel set is therefore a tube around the axis.",
+        "formal": "theorem HyperbolicSmallDisplacement\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (\u03b3 : G.carrier) (\u03b5 : \u211d) (h\u03b5 : \u03b5 > 0)\n    (hlox : TranslationLength n H G \u03b3 > 0)\n    (hfix : \u2203 p q : B.carrier, p \u2260 q \u2227\n      Sum.inr p \u2208 FixedPointSet n H G B \u03b3 \u2227\n      Sum.inr q \u2208 FixedPointSet n H G B \u03b3) :\n    -- The small displacement set is contained in a tubular neighborhood of the axis\n    -- (here expressed as a star-shaped set about one of the axis endpoints)\n    \u2203 (S : StarShapedSet n H B), SmallDisplacementSet n H G \u03b3 \u03b5 \u2286 S.set := by sorry"
+    },
+    {
+        "name": "ParabolicSmallDisplacement",
+        "inputs": [
+            "SmallDisplacementSet",
+            "StarShapedSet"
+        ],
+        "type": "lemma",
+        "natural": "If $",
+        "NL_proof": "In the upper half-space model with the fixed point at infinity, the displacement function $d(x, \\gamma x)$ is a decreasing function of the height coordinate along each vertical geodesic ray. Hence the sublevel set intersects each vertical ray in a half-ray, making it star-shaped about infinity.",
+        "formal": "theorem ParabolicSmallDisplacement\n    (n : \u2115) (H : HyperbolicSpace n) (G : IsomGroup n H) (B : BoundaryHyperbolicSpace n H)\n    (\u03b3 : G.carrier) (\u03b5 : \u211d) (h\u03b5 : \u03b5 > 0)\n    (hpar : \u00ac \u2203 x : H.carrier, G.action \u03b3 x = x)\n    (hpar_one_fix : \u2203! p : B.carrier, Sum.inr p \u2208 FixedPointSet n H G B \u03b3) :\n    \u2203 (S : StarShapedSet n H B), SmallDisplacementSet n H G \u03b3 \u03b5 \u2286 S.set := by sorry"
+    },
+    {
+        "name": "ThickThinDecomposition",
+        "inputs": [
+            "MargulisLemma",
+            "MargulisLemma2",
+            "ElementarySubgroup",
+            "HyperbolicSmallDisplacement",
+            "ParabolicSmallDisplacement",
+            "SmallDisplacementSet",
+            "ThinPart",
+            "ThickPart",
+            "Tube",
+            "Cusp",
+            "StarShapedSet",
+            "NoEllipticElements"
+        ],
+        "type": "theorem",
+        "natural": "(Thick-Thin Decomposition) Let $M =",
+        "NL_proof": "The thin part lifts to $S = \\bigcup_{\\varphi \\in \\Gamma \\setminus \\{1\\}} S_\\varphi(\\epsilon_n)$ in $\\mathbb{H}^n$. If $x \\in S_\\varphi(\\epsilon_n) \\cap S_\\psi(\\epsilon_n)$, the Margulis Lemma implies $\\varphi, \\psi$ generate a virtually nilpotent group $\\Gamma_{\\epsilon_n}(x)$. By the elementary subgroup theorem, $\\varphi$ and $\\psi$ are either parabolic fixing the same boundary point or powers of the same loxodromic isometry. Each connected component $S_0$ of $S$ is thus a union of star-shaped sets centered at a common boundary point $p$ or axis $l$, hence is itself star-shaped. The quotient $S_0 / \\Gamma_0$ gives the cusp or tube neighborhoods.",
+        "formal": "theorem ThickThinDecomposition\n    (n : \u2115) (M : CompleteHyperbolicManifold n) (B : BoundaryHyperbolicSpace n M.H)\n    (hMargulis : \u2203 (\u03b5_n : \u211d), \u03b5_n > 0 \u2227\n      \u2200 (x : M.H.carrier) (\u03b5 : \u211d), \u03b5 \u2264 \u03b5_n \u2192\n        \u2203 (N : @Subgroup M.G.carrier M.G.isGroup),\n          N \u2264 SmallDisplacementSubgroup n M.H M.G M.Gamma x \u03b5 \u2227\n          Group.IsNilpotent N)\n    (hElem : \u2200 (Gamma' : @Subgroup M.G.carrier M.G.isGroup),\n      (\u2203 N : @Subgroup M.G.carrier M.G.isGroup, N \u2264 Gamma' \u2227 Group.IsNilpotent N) \u2192\n      Finite Gamma' \u2228\n      (\u2203 \u03b3 : M.G.carrier, \u03b3 \u2208 Gamma' \u2227 TranslationLength n M.H M.G \u03b3 > 0) \u2228\n      (\u2203 p : B.carrier, \u2200 g : M.G.carrier, g \u2208 Gamma' \u2192\n        Sum.inr p \u2208 FixedPointSet n M.H M.G B g))\n    (hNoEll : \u2200 \u03b3 : M.G.carrier, \u03b3 \u2208 M.Gamma \u2192\n      \u03b3 \u2260 @One.one M.G.carrier M.G.isGroup.toOne \u2192\n      \u00ac \u2203 x : M.H.carrier, M.G.action \u03b3 x = x)\n    (hHypSD : \u2200 \u03b3 : M.G.carrier, TranslationLength n M.H M.G \u03b3 > 0 \u2192\n      \u2200 \u03b5 : \u211d, \u03b5 > 0 \u2192 True)\n    (hParSD : \u2200 \u03b3 : M.G.carrier,\n      (\u00ac \u2203 x : M.H.carrier, M.G.action \u03b3 x = x) \u2192\n      \u2200 \u03b5 : \u211d, \u03b5 > 0 \u2192 True) :\n    \u2203 (\u03b5_n : \u211d) (_ : \u03b5_n > 0)\n      (components : Set (Set M.carrier)),\n      -- Components cover the thin part\n      (ThinPart n M \u03b5_n = \u22c3\u2080 components) \u2227\n      -- Components are pairwise disjoint\n      (\u2200 C\u2081 \u2208 components, \u2200 C\u2082 \u2208 components, C\u2081 \u2260 C\u2082 \u2192 C\u2081 \u2229 C\u2082 = \u2205) \u2227\n      -- Each component is either a cusp neighborhood or a tube neighborhood\n      (\u2200 C \u2208 components,\n        -- Cusp neighborhood: associated to a parabolic subgroup\n        (\u2203 (p : B.carrier),\n          \u2200 x : M.H.carrier, M.projection x \u2208 C \u2192\n            \u2203 g : M.G.carrier, g \u2208 M.Gamma \u2227\n              Sum.inr p \u2208 FixedPointSet n M.H M.G B g) \u2228\n        -- Tube neighborhood: associated to a loxodromic element with short translation length\n        (\u2203 (\u03b3 : M.G.carrier), \u03b3 \u2208 M.Gamma \u2227\n          TranslationLength n M.H M.G \u03b3 > 0 \u2227\n          TranslationLength n M.H M.G \u03b3 < \u03b5_n))\n      := by sorry"
+    },
+    {
+        "name": "ThickThinDecomposition_test_trivial",
+        "inputs": [
+            "ThickThinDecomposition",
+            "ThinPart"
+        ],
+        "type": "unit test",
+        "natural": "For any complete hyperbolic manifold, the thin part with respect to $",
+        "NL_proof": "If $\\epsilon = 0$, there are no points with injectivity radius less than $0$.",
+        "formal": "theorem ThickThinDecomposition_test_trivial\n    (n : \u2115) (M : CompleteHyperbolicManifold n)\n    (hpos : \u2200 x : M.carrier, InjectivityRadius n M x \u2265 0) :\n    ThinPart n M 0 = \u2205 := by sorry\n\nend"
+    }
+]

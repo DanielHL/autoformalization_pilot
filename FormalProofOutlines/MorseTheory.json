@@ -1,0 +1,123 @@
+[
+    {
+        "name": "IsCriticalPoint",
+        "inputs": [],
+        "type": "definition",
+        "natural": "A point $p",
+        "NL_proof": "",
+        "formal": "def IsCriticalPoint (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) : Prop :=\n  mfderiv I (modelWithCornersSelf \u211d \u211d) f p = 0"
+    },
+    {
+        "name": "IntrinsicHessian",
+        "inputs": [
+            "IsCriticalPoint"
+        ],
+        "type": "definition",
+        "natural": "The intrinsic Hessian of $f$ at a critical point $p$ is the symmetric bilinear form\n  $H_p f : T_p M",
+        "NL_proof": "",
+        "formal": "noncomputable def IntrinsicHessian (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) :\n    TangentSpace I p \u2192\u2097[\u211d] TangentSpace I p \u2192\u2097[\u211d] \u211d := sorry"
+    },
+    {
+        "name": "NonDegenerateCriticalPoint",
+        "inputs": [
+            "IsCriticalPoint",
+            "IntrinsicHessian"
+        ],
+        "type": "definition",
+        "natural": "A point $p$ is a non-degenerate critical point of a smooth function $f$ if it is a\n  critical point and the Hessian of $f$ at $p$ is non-degenerate.  The index $",
+        "NL_proof": "",
+        "formal": "def NonDegenerateCriticalPoint (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115) : Prop :=\n  IsCriticalPoint I f p \u2227\n  -- Non-degeneracy: the Hessian has trivial kernel\n  (\u2200 v : TangentSpace I p,\n      (\u2200 w : TangentSpace I p, (IntrinsicHessian I f p v) w = 0) \u2192 v = 0) \u2227\n  -- Index: there exists a subspace of dimension idx that is negative-definite for the Hessian,\n  -- and it is maximal with this property\n  (\u2203 V : Submodule \u211d (TangentSpace I p),\n    Module.finrank \u211d V = idx \u2227\n    (\u2200 v \u2208 V, v \u2260 0 \u2192 (IntrinsicHessian I f p v) v < 0) \u2227\n    (\u2200 W : Submodule \u211d (TangentSpace I p),\n        (\u2200 w \u2208 W, w \u2260 0 \u2192 (IntrinsicHessian I f p w) w < 0) \u2192\n        Module.finrank \u211d W \u2264 idx))"
+    },
+    {
+        "name": "SublevelSet",
+        "inputs": [],
+        "type": "definition",
+        "natural": "The sublevel set $M^c$ is the set of all points $x",
+        "NL_proof": "",
+        "formal": "def SublevelSet (f : M \u2192 \u211d) (c : \u211d) : Set M :=\n  {x : M | f x \u2264 c}"
+    },
+    {
+        "name": "MorseLemma",
+        "inputs": [
+            "NonDegenerateCriticalPoint"
+        ],
+        "type": "theorem",
+        "natural": "(Morse Lemma) Let $p$ be a non-degenerate critical point of $f$ of index $",
+        "NL_proof": "By Taylor expansion and induction using the non-degeneracy of the Hessian.",
+        "formal": "theorem MorseLemma [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115)\n    (h : NonDegenerateCriticalPoint I f p idx)\n    (hidx : idx \u2264 Module.finrank \u211d E) :\n    \u2203 (\u03c6 : PartialDiffeomorph I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d))\n            M (Fin (Module.finrank \u211d E) \u2192 \u211d) \u22a4),\n      p \u2208 \u03c6.source \u2227\n      \u03c6 p = 0 \u2227\n      \u2200 x \u2208 \u03c6.source,\n        f x = f p\n          - \u2211 i : Fin idx,\n              (\u03c6 x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.castAdd (Module.finrank \u211d E - idx) i))) ^ 2\n          + \u2211 i : Fin (Module.finrank \u211d E - idx),\n              (\u03c6 x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.natAdd idx i))) ^ 2 := by\n  sorry"
+    },
+    {
+        "name": "GradientLikeVectorField",
+        "inputs": [],
+        "type": "definition",
+        "natural": "A vector field $X$ on $M$ is gradient-like for $f$ if $X(f) > 0$ away from critical\n  points, and near any critical point, it matches the negative gradient of $f$ in Morse coordinates.",
+        "NL_proof": "",
+        "formal": "def GradientLikeVectorField (f : M \u2192 \u211d) (X : (p : M) \u2192 TangentSpace I p) : Prop := sorry"
+    },
+    {
+        "name": "HandleAttachment",
+        "inputs": [],
+        "type": "definition",
+        "natural": "A topological space $Y$ is obtained from $X$ by attaching a $",
+        "NL_proof": "",
+        "formal": "def HandleAttachment (X : Set M) (Y : Set M) (idx : \u2115) : Prop := sorry"
+    },
+    {
+        "name": "DeformationRetract",
+        "inputs": [
+            "GradientLikeVectorField"
+        ],
+        "type": "definition",
+        "natural": "A subset $A$ is a deformation retract of $B$ if there is a continuous map\n  $H : B",
+        "NL_proof": "",
+        "formal": "def DeformationRetract (A : Set M) (B : Set M) : Prop := sorry"
+    },
+    {
+        "name": "HomotopyTypesCriticalValues",
+        "inputs": [
+            "IsCriticalPoint",
+            "NonDegenerateCriticalPoint",
+            "SublevelSet",
+            "MorseLemma",
+            "GradientLikeVectorField",
+            "HandleAttachment",
+            "DeformationRetract"
+        ],
+        "type": "theorem",
+        "natural": "Let $f: M",
+        "NL_proof": "We first use `MorseLemma` around $p$ to find a chart where $f$ is exactly quadratic.\n  Then we construct a `GradientLikeVectorField` $X$ matching the negative gradient inside the chart\n  and strictly decreasing $f$ outside.  We construct a thickened handle region\n  $H \\cong D^{\\mathtt{idx}} \\times D^{n-\\mathtt{idx}}$ around $p$.  Using the flow of $X$ we prove\n  a `DeformationRetract` from $M^{c+\\epsilon} \\setminus H$ into $M^{c-\\epsilon}$.  Since $H$ is\n  attached to $M^{c-\\epsilon}$ via its boundary, this is a `HandleAttachment`, showing\n  $M^{c+\\epsilon}$ is homotopy equivalent to $M^{c-\\epsilon}$ with an $\\mathtt{idx}$-cell attached.",
+        "formal": "theorem HomotopyTypesCriticalValues\n    [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115) (c : \u211d) (\u03b5 : \u211d)\n    (hc : f p = c)\n    (h_nondeg : NonDegenerateCriticalPoint I f p idx)\n    (h_compact : IsCompact (f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5))))\n    (h_no_other_crit : \u2200 q \u2208 f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5)),\n        q \u2260 p \u2192 \u00ac IsCriticalPoint I f q)\n    (h_eps_pos : \u03b5 > 0) :\n    \u2203 \u03b5\u2080 > 0, \u2200 \u03b5' \u2208 Set.Ioo 0 \u03b5\u2080, \u03b5' < \u03b5 \u2192\n      HandleAttachment (SublevelSet f (c - \u03b5')) (SublevelSet f (c + \u03b5')) idx := by\n  sorry\n\n/-! ============================================================\n    UNIT TEST: standard quadratic form on \u211d^(p+n+z)\n\n    For non-negative integers p, n, z with p + n + z > 0, consider the function\n      q(x) = x\u2080\u00b2 + \u2026 + x_{p-1}\u00b2  \u2212  x_p\u00b2 \u2212 \u2026 \u2212 x_{p+n-1}\u00b2\n    on \u211d^(p+n+z) (the last z coordinates do not appear).\n\n    We assert (with sorry'd proofs) that:\n      1. 0 is a critical point of q.\n      2. If z > 0, the critical point is degenerate (z-dimensional kernel).\n      3. If z = 0, the critical point is non-degenerate with index n.\n\n    This serves as a sanity-check on the definitions of IsCriticalPoint,\n    IntrinsicHessian, and NonDegenerateCriticalPoint.\n    ============================================================ -/\n\nsection QuadraticFormUnitTest\n\n/-\n  We use the standard flat model: M = \u211d^d, I = modelWithCornersSelf \u211d (\u211d^d).\n  Coordinates are `Fin d \u2192 \u211d`.\n-/\n\n/-- The standard quadratic form with `pos` positive squares, `neg` negative squares,\n    and `zer` zero (absent) coordinates, on `\u211d^(pos+neg+zer)`. -/\nnoncomputable def stdQuadForm (pos neg zer : \u2115) : (Fin (pos + neg + zer) \u2192 \u211d) \u2192 \u211d :=\n  fun x =>\n    (\u2211 i : Fin pos,  x (Fin.castAdd zer (Fin.castAdd neg i)) ^ 2) -\n    (\u2211 i : Fin neg,  x (Fin.castAdd zer (Fin.natAdd pos i)) ^ 2)"
+    },
+    {
+        "name": "QuadFormCriticalPoint",
+        "inputs": [
+            "IsCriticalPoint"
+        ],
+        "type": "proposition",
+        "natural": "The origin is a critical point of the standard quadratic form $q$ on\n  $",
+        "NL_proof": "The differential of $q$ at $0$ is the linear map $v \\mapsto 2\\sum_{i<p} v_i e_i^*\n  - 2\\sum_{p \\le i < p+n} v_i e_i^*$, which vanishes at $0$ because it is linear.",
+        "formal": "theorem stdQuadForm_isCriticalPoint (pos neg zer : \u2115) (h : 0 < pos + neg + zer) :\n    IsCriticalPoint (modelWithCornersSelf \u211d (Fin (pos + neg + zer) \u2192 \u211d))\n      (stdQuadForm pos neg zer) 0 := by\n  sorry"
+    },
+    {
+        "name": "QuadFormDegenerate",
+        "inputs": [
+            "NonDegenerateCriticalPoint",
+            "QuadFormCriticalPoint"
+        ],
+        "type": "proposition",
+        "natural": "If $z > 0$, the critical point $0$ of the standard quadratic form on\n  $",
+        "NL_proof": "The last $z$ coordinates do not appear in $q$, so any tangent vector supported\n  on those coordinates lies in the kernel of the Hessian, making it degenerate.",
+        "formal": "theorem stdQuadForm_degenerate (pos neg zer : \u2115) (h : 0 < zer) (idx : \u2115) :\n    \u00ac NonDegenerateCriticalPoint (modelWithCornersSelf \u211d (Fin (pos + neg + zer) \u2192 \u211d))\n        (stdQuadForm pos neg zer) 0 idx := by\n  sorry"
+    },
+    {
+        "name": "QuadFormNonDegenerate",
+        "inputs": [
+            "NonDegenerateCriticalPoint",
+            "QuadFormCriticalPoint"
+        ],
+        "type": "proposition",
+        "natural": "If $z = 0$, the critical point $0$ of the standard quadratic form on\n  $",
+        "NL_proof": "The Hessian of $q$ at $0$ is the diagonal matrix\n  $\\mathrm{diag}(2,\\dots,2,-2,\\dots,-2)$ (block of $+2$ for the first $p$ coordinates,\n  $-2$ for the next $n$), which is non-singular.  The negative-definite subspace is exactly\n  the span of the last $n$ coordinate vectors, which has dimension $n$ and is maximal.",
+        "formal": "theorem stdQuadForm_nonDegenerate (pos neg : \u2115) (h : 0 < pos + neg) :\n    NonDegenerateCriticalPoint (modelWithCornersSelf \u211d (Fin (pos + neg) \u2192 \u211d))\n      (stdQuadForm pos neg 0) 0 neg := by\n  sorry\n\nend QuadraticFormUnitTest"
+    }
+]
