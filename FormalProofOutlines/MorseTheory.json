@@ -15,7 +15,29 @@
         "type": "definition",
         "natural": "The intrinsic Hessian of $f$ at a critical point $p$ is the symmetric bilinear form\n  $H_p f : T_p M",
         "NL_proof": "",
-        "formal": "noncomputable def IntrinsicHessian (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) :\n    TangentSpace I p \u2192\u2097[\u211d] TangentSpace I p \u2192\u2097[\u211d] \u211d := sorry"
+        "formal": "noncomputable def IntrinsicHessian (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) :\n    TangentSpace I p \u2192\u2097[\u211d] TangentSpace I p \u2192\u2097[\u211d] \u211d :=\n  (ContinuousLinearMap.coeLM \u211d).comp\n    (fderiv \u211d (fderiv \u211d (f \u2218 (extChartAt I p).symm)) (extChartAt I p p)).toLinearMap"
+    },
+    {
+        "name": "IntrinsicHessian_chart_indep",
+        "inputs": [
+            "IsCriticalPoint",
+            "IntrinsicHessian"
+        ],
+        "type": "proposition",
+        "natural": "At a critical point $p$ of a smooth function $f$, the Hessian computed in the\n  preferred chart agrees with the Hessian computed in any other smooth chart around $p$,\n  after identifying tangent vectors via the derivative of the transition map.  Concretely:\n  for any partial diffeomorphism $",
+        "NL_proof": "Write $g = f \\circ \\psi^{-1}$ and $\\tau$ for the transition map between the two\n  charts.  By the chain rule, the second derivative of $g \\circ \\tau$ is the pullback of the\n  second derivative of $g$ along $d\\tau$ plus a term involving the first derivative of $g$\n  composed with the second derivative of $\\tau$; the latter vanishes because $p$ is a\n  critical point.",
+        "formal": "theorem IntrinsicHessian_chart_indep [IsManifold I \u22a4 M] [I.Boundaryless] (f : M \u2192 \u211d) (p : M)\n    (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (hp : IsCriticalPoint I f p)\n    (\u03c8 : PartialDiffeomorph I (modelWithCornersSelf \u211d E) M E \u22a4)\n    (hp\u03c8 : p \u2208 \u03c8.source) (v w : TangentSpace I p) :\n    fderiv \u211d (fderiv \u211d (f \u2218 \u03c8.symm)) (\u03c8 p)\n        (mfderiv I (modelWithCornersSelf \u211d E) \u03c8 p v)\n        (mfderiv I (modelWithCornersSelf \u211d E) \u03c8 p w)\n      = IntrinsicHessian I f p v w := by\n  sorry"
+    },
+    {
+        "name": "IntrinsicHessian_symm",
+        "inputs": [
+            "IsCriticalPoint",
+            "IntrinsicHessian"
+        ],
+        "type": "proposition",
+        "natural": "At a critical point of a smooth function, the intrinsic Hessian is a symmetric\n  bilinear form: $H_p f(v, w) = H_p f(w, v)$.",
+        "NL_proof": "The Hessian is defined as a second Fr\u00e9chet derivative of the chart representative,\n  and second derivatives of $C^2$ functions are symmetric (Schwarz/Clairaut, available in\n  Mathlib as the symmetry of the second derivative).",
+        "formal": "theorem IntrinsicHessian_symm [IsManifold I \u22a4 M] [I.Boundaryless] (f : M \u2192 \u211d) (p : M)\n    (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (hp : IsCriticalPoint I f p) (v w : TangentSpace I p) :\n    IntrinsicHessian I f p v w = IntrinsicHessian I f p w v := by\n  sorry"
     },
     {
         "name": "NonDegenerateCriticalPoint",
@@ -37,40 +59,100 @@
         "formal": "def SublevelSet (f : M \u2192 \u211d) (c : \u211d) : Set M :=\n  {x : M | f x \u2264 c}"
     },
     {
+        "name": "SublevelSet_isClosed",
+        "inputs": [
+            "SublevelSet"
+        ],
+        "type": "proposition",
+        "natural": "If $f$ is continuous then every sublevel set $M^c$ is closed in $M$.",
+        "NL_proof": "$M^c = f^{-1}((-\\infty, c])$ is the preimage of a closed set under a continuous map.",
+        "formal": "theorem SublevelSet_isClosed (f : M \u2192 \u211d) (c : \u211d) (hf : Continuous f) :\n    IsClosed (SublevelSet f c) :=\n  isClosed_le hf continuous_const"
+    },
+    {
+        "name": "IsMorseChartAt",
+        "inputs": [
+            "IsCriticalPoint"
+        ],
+        "type": "definition",
+        "natural": "A chart $",
+        "NL_proof": "",
+        "formal": "def IsMorseChartAt (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115)\n    (\u03c6 : PartialDiffeomorph I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d))\n          M (Fin (Module.finrank \u211d E) \u2192 \u211d) \u22a4) : Prop :=\n  p \u2208 \u03c6.source \u2227\n  \u03c6 p = 0 \u2227\n  \u2200 x \u2208 \u03c6.source,\n    f x = f p + \u2211 i : Fin (Module.finrank \u211d E),\n      (if (i : \u2115) < idx then (-1 : \u211d) else 1) * (\u03c6 x i) ^ 2"
+    },
+    {
         "name": "MorseLemma",
         "inputs": [
-            "NonDegenerateCriticalPoint"
+            "NonDegenerateCriticalPoint",
+            "IsMorseChartAt"
         ],
         "type": "theorem",
         "natural": "(Morse Lemma) Let $p$ be a non-degenerate critical point of $f$ of index $",
         "NL_proof": "By Taylor expansion and induction using the non-degeneracy of the Hessian.",
-        "formal": "theorem MorseLemma [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115)\n    (h : NonDegenerateCriticalPoint I f p idx)\n    (hidx : idx \u2264 Module.finrank \u211d E) :\n    \u2203 (\u03c6 : PartialDiffeomorph I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d))\n            M (Fin (Module.finrank \u211d E) \u2192 \u211d) \u22a4),\n      p \u2208 \u03c6.source \u2227\n      \u03c6 p = 0 \u2227\n      \u2200 x \u2208 \u03c6.source,\n        f x = f p\n          - \u2211 i : Fin idx,\n              (\u03c6 x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.castAdd (Module.finrank \u211d E - idx) i))) ^ 2\n          + \u2211 i : Fin (Module.finrank \u211d E - idx),\n              (\u03c6 x (Fin.cast (Nat.add_sub_cancel' hidx) (Fin.natAdd idx i))) ^ 2 := by\n  sorry"
+        "formal": "theorem MorseLemma [IsManifold I \u22a4 M] [I.Boundaryless] (f : M \u2192 \u211d) (p : M) (idx : \u2115)\n    (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (h : NonDegenerateCriticalPoint I f p idx)\n    (hidx : idx \u2264 Module.finrank \u211d E) :\n    \u2203 \u03c6 : PartialDiffeomorph I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d))\n            M (Fin (Module.finrank \u211d E) \u2192 \u211d) \u22a4,\n      IsMorseChartAt I f p idx \u03c6 := by\n  sorry"
     },
     {
         "name": "GradientLikeVectorField",
-        "inputs": [],
+        "inputs": [
+            "IsCriticalPoint",
+            "NonDegenerateCriticalPoint",
+            "IsMorseChartAt"
+        ],
         "type": "definition",
-        "natural": "A vector field $X$ on $M$ is gradient-like for $f$ if $X(f) > 0$ away from critical\n  points, and near any critical point, it matches the negative gradient of $f$ in Morse coordinates.",
+        "natural": "A vector field $X$ on $M$ is gradient-like for $f$ if $X(f) > 0$ away from critical\n  points, and around every non-degenerate critical point of index $",
         "NL_proof": "",
-        "formal": "def GradientLikeVectorField (f : M \u2192 \u211d) (X : (p : M) \u2192 TangentSpace I p) : Prop := sorry"
+        "formal": "def GradientLikeVectorField (I : ModelWithCorners \u211d E H) [IsManifold I \u22a4 M]\n    (f : M \u2192 \u211d) (X : (p : M) \u2192 TangentSpace I p) : Prop :=\n  (\u2200 p : M, \u00ac IsCriticalPoint I f p \u2192\n    (0 : \u211d) < show \u211d from mfderiv I (modelWithCornersSelf \u211d \u211d) f p (X p)) \u2227\n  (\u2200 (p : M) (idx : \u2115), NonDegenerateCriticalPoint I f p idx \u2192\n    \u2203 \u03c6 : PartialDiffeomorph I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d))\n            M (Fin (Module.finrank \u211d E) \u2192 \u211d) \u22a4,\n      IsMorseChartAt I f p idx \u03c6 \u2227\n      \u2200 x \u2208 \u03c6.source,\n        mfderiv I (modelWithCornersSelf \u211d (Fin (Module.finrank \u211d E) \u2192 \u211d)) \u03c6 x (X x) =\n          fun i : Fin (Module.finrank \u211d E) =>\n            (if (i : \u2115) < idx then (-2 : \u211d) else 2) * \u03c6 x i)"
     },
     {
-        "name": "HandleAttachment",
-        "inputs": [],
-        "type": "definition",
-        "natural": "A topological space $Y$ is obtained from $X$ by attaching a $",
-        "NL_proof": "",
-        "formal": "def HandleAttachment (X : Set M) (Y : Set M) (idx : \u2115) : Prop := sorry"
+        "name": "GradientLikeVectorField_exists",
+        "inputs": [
+            "IsCriticalPoint",
+            "NonDegenerateCriticalPoint",
+            "GradientLikeVectorField"
+        ],
+        "type": "proposition",
+        "natural": "If every critical point of a smooth function $f$ is non-degenerate (a Morse\n  function), then there exists a gradient-like vector field for $f$.",
+        "NL_proof": "Choose a Morse chart around each critical point and place the gradient\n  of the standard quadratic form there; away from the critical points choose, in local charts,\n  vector fields with $X(f) > 0$ (e.g. local Euclidean gradients).  Patch these together with a\n  smooth partition of unity; the positivity condition is convex, so it survives the patching.",
+        "formal": "theorem GradientLikeVectorField_exists [IsManifold I \u22a4 M] [I.Boundaryless] [T2Space M] [SigmaCompactSpace M]\n    (f : M \u2192 \u211d) (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (hmorse : \u2200 p : M, IsCriticalPoint I f p \u2192 \u2203 idx, NonDegenerateCriticalPoint I f p idx) :\n    \u2203 X : (p : M) \u2192 TangentSpace I p, GradientLikeVectorField I f X := by\n  sorry"
     },
     {
         "name": "DeformationRetract",
+        "inputs": [],
+        "type": "definition",
+        "natural": "A subset $A$ is a (strong) deformation retract of $B$ if $A",
+        "NL_proof": "",
+        "formal": "def DeformationRetract (A : Set M) (B : Set M) : Prop :=\n  A \u2286 B \u2227\n  \u2203 Ht : C(\u21a5B \u00d7 unitInterval, \u21a5B),\n    (\u2200 b : \u21a5B, Ht (b, 0) = b) \u2227\n    (\u2200 b : \u21a5B, (Ht (b, 1) : M) \u2208 A) \u2227\n    (\u2200 (b : \u21a5B) (t : unitInterval), (b : M) \u2208 A \u2192 Ht (b, t) = b)"
+    },
+    {
+        "name": "DeformationRetract_homotopyEquiv",
         "inputs": [
-            "GradientLikeVectorField"
+            "DeformationRetract"
+        ],
+        "type": "proposition",
+        "natural": "If $A$ is a deformation retract of $B$, then the inclusion $A",
+        "NL_proof": "The retraction $r = H(\\cdot, 1) : B \\to A$ satisfies $r \\circ \\iota = \\mathrm{id}_A$\n  on the nose (since $H$ fixes $A$ pointwise), and $\\iota \\circ r \\simeq \\mathrm{id}_B$ via the\n  homotopy $H$ itself.",
+        "formal": "theorem DeformationRetract_homotopyEquiv (A B : Set M) (h : DeformationRetract A B) :\n    Nonempty (ContinuousMap.HomotopyEquiv \u21a5A \u21a5B) := by\n  sorry"
+    },
+    {
+        "name": "NoCriticalPoints_deformationRetract",
+        "inputs": [
+            "IsCriticalPoint",
+            "SublevelSet",
+            "GradientLikeVectorField",
+            "DeformationRetract"
+        ],
+        "type": "theorem",
+        "natural": "(Milnor, Theorem 3.1) Let $a < b$ and suppose $f^{-1}[a, b]$ is compact and contains\n  no critical points of $f$.  Then $M^a$ is a deformation retract of $M^b$.",
+        "NL_proof": "Flow along (the negative of) a gradient-like vector field, rescaled by\n  $1 / X(f)$ inside $f^{-1}[a,b]$ so that $f$ decreases at unit speed; compactness guarantees\n  the flow exists for the required time and pushes $M^b$ down into $M^a$ while fixing $M^a$.",
+        "formal": "theorem NoCriticalPoints_deformationRetract [IsManifold I \u22a4 M] [I.Boundaryless] [T2Space M]\n    (f : M \u2192 \u211d) (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (a b : \u211d) (hab : a < b)\n    (h_compact : IsCompact (f \u207b\u00b9' (Set.Icc a b)))\n    (h_no_crit : \u2200 q \u2208 f \u207b\u00b9' (Set.Icc a b), \u00ac IsCriticalPoint I f q) :\n    DeformationRetract (SublevelSet f a) (SublevelSet f b) := by\n  sorry"
+    },
+    {
+        "name": "HandleAttachment",
+        "inputs": [
+            "DeformationRetract"
         ],
         "type": "definition",
-        "natural": "A subset $A$ is a deformation retract of $B$ if there is a continuous map\n  $H : B",
+        "natural": "$Y$ has the homotopy type of $X$ with an $",
         "NL_proof": "",
-        "formal": "def DeformationRetract (A : Set M) (B : Set M) : Prop := sorry"
+        "formal": "def HandleAttachment (X : Set M) (Y : Set M) (idx : \u2115) : Prop :=\n  X \u2286 Y \u2227\n  \u2203 e : C(\u21a5(Metric.closedBall (0 : EuclideanSpace \u211d (Fin idx)) 1), M),\n    (\u2200 v, e v \u2208 Y) \u2227\n    (\u2200 v : \u21a5(Metric.closedBall (0 : EuclideanSpace \u211d (Fin idx)) 1),\n        \u2016(v : EuclideanSpace \u211d (Fin idx))\u2016 = 1 \u2192 e v \u2208 X) \u2227\n    (\u2200 v : \u21a5(Metric.closedBall (0 : EuclideanSpace \u211d (Fin idx)) 1),\n        \u2016(v : EuclideanSpace \u211d (Fin idx))\u2016 < 1 \u2192 e v \u2209 X) \u2227\n    (\u2200 v w : \u21a5(Metric.closedBall (0 : EuclideanSpace \u211d (Fin idx)) 1),\n        \u2016(v : EuclideanSpace \u211d (Fin idx))\u2016 < 1 \u2192 \u2016(w : EuclideanSpace \u211d (Fin idx))\u2016 < 1 \u2192\n        e v = e w \u2192 v = w) \u2227\n    DeformationRetract (X \u222a Set.range e) Y"
     },
     {
         "name": "HomotopyTypesCriticalValues",
@@ -78,15 +160,17 @@
             "IsCriticalPoint",
             "NonDegenerateCriticalPoint",
             "SublevelSet",
+            "IsMorseChartAt",
             "MorseLemma",
             "GradientLikeVectorField",
-            "HandleAttachment",
-            "DeformationRetract"
+            "NoCriticalPoints_deformationRetract",
+            "DeformationRetract",
+            "HandleAttachment"
         ],
         "type": "theorem",
         "natural": "Let $f: M",
-        "NL_proof": "We first use `MorseLemma` around $p$ to find a chart where $f$ is exactly quadratic.\n  Then we construct a `GradientLikeVectorField` $X$ matching the negative gradient inside the chart\n  and strictly decreasing $f$ outside.  We construct a thickened handle region\n  $H \\cong D^{\\mathtt{idx}} \\times D^{n-\\mathtt{idx}}$ around $p$.  Using the flow of $X$ we prove\n  a `DeformationRetract` from $M^{c+\\epsilon} \\setminus H$ into $M^{c-\\epsilon}$.  Since $H$ is\n  attached to $M^{c-\\epsilon}$ via its boundary, this is a `HandleAttachment`, showing\n  $M^{c+\\epsilon}$ is homotopy equivalent to $M^{c-\\epsilon}$ with an $\\mathtt{idx}$-cell attached.",
-        "formal": "theorem HomotopyTypesCriticalValues\n    [IsManifold I \u22a4 M] (f : M \u2192 \u211d) (p : M) (idx : \u2115) (c : \u211d) (\u03b5 : \u211d)\n    (hc : f p = c)\n    (h_nondeg : NonDegenerateCriticalPoint I f p idx)\n    (h_compact : IsCompact (f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5))))\n    (h_no_other_crit : \u2200 q \u2208 f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5)),\n        q \u2260 p \u2192 \u00ac IsCriticalPoint I f q)\n    (h_eps_pos : \u03b5 > 0) :\n    \u2203 \u03b5\u2080 > 0, \u2200 \u03b5' \u2208 Set.Ioo 0 \u03b5\u2080, \u03b5' < \u03b5 \u2192\n      HandleAttachment (SublevelSet f (c - \u03b5')) (SublevelSet f (c + \u03b5')) idx := by\n  sorry\n\n/-! ============================================================\n    UNIT TEST: standard quadratic form on \u211d^(p+n+z)\n\n    For non-negative integers p, n, z with p + n + z > 0, consider the function\n      q(x) = x\u2080\u00b2 + \u2026 + x_{p-1}\u00b2  \u2212  x_p\u00b2 \u2212 \u2026 \u2212 x_{p+n-1}\u00b2\n    on \u211d^(p+n+z) (the last z coordinates do not appear).\n\n    We assert (with sorry'd proofs) that:\n      1. 0 is a critical point of q.\n      2. If z > 0, the critical point is degenerate (z-dimensional kernel).\n      3. If z = 0, the critical point is non-degenerate with index n.\n\n    This serves as a sanity-check on the definitions of IsCriticalPoint,\n    IntrinsicHessian, and NonDegenerateCriticalPoint.\n    ============================================================ -/\n\nsection QuadraticFormUnitTest\n\n/-\n  We use the standard flat model: M = \u211d^d, I = modelWithCornersSelf \u211d (\u211d^d).\n  Coordinates are `Fin d \u2192 \u211d`.\n-/\n\n/-- The standard quadratic form with `pos` positive squares, `neg` negative squares,\n    and `zer` zero (absent) coordinates, on `\u211d^(pos+neg+zer)`. -/\nnoncomputable def stdQuadForm (pos neg zer : \u2115) : (Fin (pos + neg + zer) \u2192 \u211d) \u2192 \u211d :=\n  fun x =>\n    (\u2211 i : Fin pos,  x (Fin.castAdd zer (Fin.castAdd neg i)) ^ 2) -\n    (\u2211 i : Fin neg,  x (Fin.castAdd zer (Fin.natAdd pos i)) ^ 2)"
+        "NL_proof": "We first use `MorseLemma` around $p$ to find a chart where $f$ is exactly quadratic.\n  Then we construct a `GradientLikeVectorField` $X$ matching the quadratic-form gradient inside\n  the chart and with $X(f) > 0$ outside.  We construct a thickened handle region\n  $H \\cong D^{\\mathtt{idx}} \\times D^{n-\\mathtt{idx}}$ around $p$.  Using the flow of $-X$ we prove\n  a `DeformationRetract` from $M^{c+\\epsilon} \\setminus H$ into $M^{c-\\epsilon}$ (away from the\n  critical level this is `NoCriticalPoints_deformationRetract`).  Since $H$ is attached to\n  $M^{c-\\epsilon}$ via its boundary and retracts onto its core $\\mathtt{idx}$-cell, this is a\n  `HandleAttachment`, showing $M^{c+\\epsilon}$ is homotopy equivalent to $M^{c-\\epsilon}$ with\n  an $\\mathtt{idx}$-cell attached.",
+        "formal": "theorem HomotopyTypesCriticalValues\n    [IsManifold I \u22a4 M] [I.Boundaryless] [T2Space M] (f : M \u2192 \u211d) (p : M) (idx : \u2115) (c : \u211d) (\u03b5 : \u211d)\n    (hf : ContMDiff I (modelWithCornersSelf \u211d \u211d) \u22a4 f)\n    (hc : f p = c)\n    (h_nondeg : NonDegenerateCriticalPoint I f p idx)\n    (h_compact : IsCompact (f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5))))\n    (h_no_other_crit : \u2200 q \u2208 f \u207b\u00b9' (Set.Icc (c - \u03b5) (c + \u03b5)),\n        q \u2260 p \u2192 \u00ac IsCriticalPoint I f q)\n    (h_eps_pos : \u03b5 > 0) :\n    \u2203 \u03b5\u2080 > 0, \u2200 \u03b5' \u2208 Set.Ioo 0 \u03b5\u2080, \u03b5' < \u03b5 \u2192\n      HandleAttachment (SublevelSet f (c - \u03b5')) (SublevelSet f (c + \u03b5')) idx := by\n  sorry\n\n/-! ============================================================\n    UNIT TEST: standard quadratic form on \u211d^(p+n+z)\n\n    For non-negative integers p, n, z with p + n + z > 0, consider the function\n      q(x) = x\u2080\u00b2 + \u2026 + x_{p-1}\u00b2  \u2212  x_p\u00b2 \u2212 \u2026 \u2212 x_{p+n-1}\u00b2\n    on \u211d^(p+n+z) (the last z coordinates do not appear).\n\n    We assert (with sorry'd proofs) that:\n      1. 0 is a critical point of q.\n      2. If z > 0, the critical point is degenerate (z-dimensional kernel).\n      3. If z = 0, the critical point is non-degenerate with index n.\n\n    This serves as a sanity-check on the definitions of IsCriticalPoint,\n    IntrinsicHessian, and NonDegenerateCriticalPoint.\n    ============================================================ -/\n\nsection QuadraticFormUnitTest\n\n/-\n  We use the standard flat model: M = \u211d^d, I = modelWithCornersSelf \u211d (\u211d^d).\n  Coordinates are `Fin d \u2192 \u211d`.\n-/\n\n/-- The standard quadratic form with `pos` positive squares, `neg` negative squares,\n    and `zer` zero (absent) coordinates, on `\u211d^(pos+neg+zer)`. -/\nnoncomputable def stdQuadForm (pos neg zer : \u2115) : (Fin (pos + neg + zer) \u2192 \u211d) \u2192 \u211d :=\n  fun x =>\n    (\u2211 i : Fin pos,  x (Fin.castAdd zer (Fin.castAdd neg i)) ^ 2) -\n    (\u2211 i : Fin neg,  x (Fin.castAdd zer (Fin.natAdd pos i)) ^ 2)"
     },
     {
         "name": "QuadFormCriticalPoint",
